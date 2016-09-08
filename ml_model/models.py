@@ -78,8 +78,8 @@ class MLModel(models.Model):
     def clean(self):
         if self.model_hash != self._hash_of_model(self.model):
             raise ValidationError("model_hash '%s' should be set by the model '%s'" % (self.model_hash, self.model))
-        # if already persisted
-        obj = self.get_by_model(self.model_hash)
+        # if already persisted, do not update model
+        obj = self.get_by_model_hash(self.model_hash)
         if self.id and self.model_hash != getattr(obj, 'model_hash', None):
             raise ValidationError("Cannot persist updated model '%s'.  Create a new MLModel object." % self.model)
 
