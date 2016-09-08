@@ -1,16 +1,16 @@
 import shutil
 import os
 
-from .models import MLModel
+from .models import Estimator
 from django.apps import apps
 from django.conf import settings
 
 
-class MLModelManager():
+class EstimatorManager():
 
     @classmethod
     def _get_all_files(cls, relative=True):
-        directory = os.path.join(settings.MEDIA_ROOT, settings.MODELS_UPLOAD_DIR)
+        directory = os.path.join(settings.MEDIA_ROOT, settings.ESTIMATOR_UPLOAD_DIR)
         all_files = []
         for root, dirs, files in os.walk(directory):
             for filename in files:
@@ -23,20 +23,20 @@ class MLModelManager():
     @classmethod
     def _get_unreferenced_files(cls):
         all_files = set(cls._get_all_files())
-        files_referenced = set(MLModel.objects.filter(model_file__in=all_files).values_list('model_file', flat=True))
+        files_referenced = set(Estimator.objects.filter(estimator_file__in=all_files).values_list('estimator_file', flat=True))
         files_unreferenced = all_files - files_referenced
         return files_unreferenced
 
     @classmethod
-    def _get_empty_ml_models(cls):
+    def _get_empty_records(cls):
         all_files = cls._get_all_files()
-        empty_ml_models = MLModel.objects.exclude(model_file__in=all_files).all()
-        return empty_ml_models
+        empty_records = Estimator.objects.exclude(estimator_file__in=all_files).all()
+        return empty_records
 
     @classmethod
     def delete_empty_records(cls):
-        empty_models = cls._get_empty_ml_models()
-        return empty_models.delete()
+        empty_records = cls._get_empty_records()
+        return empty_records.delete()
 
     @classmethod
     def delete_unreferenced_files(cls):
@@ -49,6 +49,6 @@ class MLModelManager():
     def load_unreferenced_files(cls):
         unreferenced_files = cls._get_unreferenced_files()
         for filename in unreferenced_files:
-            m = MLModel.create_from_file(filename)
+            m = Estimator.create_from_file(filename)
             m.save()
         return len(unreferenced_files)

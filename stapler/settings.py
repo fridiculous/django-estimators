@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'ml_model',
+    'estimators',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -83,7 +83,7 @@ DATABASES = {
 }
 
 MEDIA_ROOT = 'files/'
-MODELS_UPLOAD_DIR = 'ml_models/'
+ESTIMATOR_UPLOAD_DIR = 'estimators/'
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
 
