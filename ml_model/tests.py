@@ -21,10 +21,11 @@ class MLModelCase(TestCase):
             del m
 
             n = MLModel.objects.get(description='object test')
-            # md5 hash of a "dill'ed" object = 'aa5d09692ebd6e2041f70555fcdac4b1'
-            self.assertEqual(n.model_hash, 'aa5d09692ebd6e2041f70555fcdac4b1')
+            # sklearn hash of a object = 'd9c9f286391652b89978a6961b52b674'
+            self.assertEqual(n.model_hash, 'd9c9f286391652b89978a6961b52b674')
             # assert loaded after calling n.model
             self.assertEquals(n.model, object)
+            self.assertEquals(MLModel._hash_of_model(object), 'd9c9f286391652b89978a6961b52b674')
 
     def test_model_persistance(self):
         with self.settings(MEDIA_ROOT=self.tmp_dir.name):
@@ -45,6 +46,19 @@ class MLModelCase(TestCase):
             n = MLModel.get_or_create('new_original_object')
             self.assertEquals(m, n)
 
+    def test_create_from_file(self):
+        with self.settings(MEDIA_ROOT=self.tmp_dir.name):
+            obj = "{'key': 'value'}"
+            m = MLModel(model=obj)
+            m.save()
+            model_hash = m.model_hash
+            file_path = m.model_file.name
+            del m
+
+            m = MLModel.create_from_file(file_path)
+            self.assertEquals(m.model, obj)
+            self.assertEquals(m.model_hash, model_hash)
+
     def test_update_model_fail(self):
         with self.settings(MEDIA_ROOT=self.tmp_dir.name):
             m = MLModel(model='uneditable_object')
@@ -55,7 +69,7 @@ class MLModelCase(TestCase):
 
     def test_hashing_func(self):
         model_hash = MLModel._hash_of_model('abcd')
-        self.assertEqual(model_hash, 'aa5ef22a3e1ec0c5f7f22288e08d7969')
+        self.assertEqual(model_hash, '3062a9e3345c129799bd2c1603c2e966')
 
     def test_model_hash_diff_fail(self):
         with self.settings(MEDIA_ROOT=self.tmp_dir.name):

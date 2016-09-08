@@ -82,7 +82,8 @@ DATABASES = {
     }
 }
 
-
+MEDIA_ROOT = 'files/'
+MODELS_UPLOAD_DIR = 'ml_models/'
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
 

@@ -1,11 +1,15 @@
-from django.db import models
-import hashlib
 import datetime
 import os
 import dill
 
+from sklearn.externals import joblib
+
 from django.core.files.base import ContentFile
 from django.core.exceptions import ValidationError
+
+from django.db import models
+from django.apps import apps
+from django.conf import settings
 
 
 class MLModel(models.Model):
@@ -13,7 +17,7 @@ class MLModel(models.Model):
     create_date = models.DateTimeField(auto_now_add=True, blank=False, null=False)
     description = models.CharField(max_length=256)
     model_hash = models.CharField(max_length=64, unique=True, default=None, null=False, editable=False)
-    model_file = models.FileField(upload_to='files/ml_models/', default=None, null=False, blank=True, editable=False)
+    model_file = models.FileField(upload_to=settings.MODELS_UPLOAD_DIR, default=None, null=False, blank=True, editable=False)
     _model = None
 
     class Meta:
@@ -28,8 +32,7 @@ class MLModel(models.Model):
 
     @classmethod
     def _hash_of_model(cls, model):
-        data = dill.dumps(model)
-        return hashlib.md5(data).hexdigest()
+        return joblib.hash(model)
 
     @classmethod
     def get_by_model(cls, model):
@@ -83,9 +86,9 @@ class MLModel(models.Model):
     def _persist_model(self):
         if self.model_hash:
             data = dill.dumps(self.model)
-            cf = ContentFile(data)
-            self.model_file.save(self.model_hash, cf)
-            cf.close()
+            f = ContentFile(data)
+            self.model_file.save(self.model_hash, f)
+            f.close()
             return True
         return False
 
@@ -94,4 +97,12 @@ class MLModel(models.Model):
         if self.is_model_persisted:
             self.model_file.open()
             self._model = dill.loads(self.model_file.read())
+            self.model_hash = MLModel._hash_of_model(self._model)
             self.model_file.close()
+
+    @classmethod
+    def create_from_file(cls, filename):
+        obj = cls()
+        obj.model_file = filename
+        obj._load_model()
+        return obj
