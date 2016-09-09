@@ -9,20 +9,21 @@ from django.conf import settings
 class EstimatorManager():
 
     @classmethod
-    def _get_all_files(cls, relative=True):
-        directory = os.path.join(settings.MEDIA_ROOT, settings.ESTIMATOR_UPLOAD_DIR)
+    def _get_all_files(cls, directory=None, relative_to_root=True):
+        if directory is None:
+            directory = os.path.join(settings.MEDIA_ROOT, settings.ESTIMATOR_UPLOAD_DIR)
         all_files = []
         for root, dirs, files in os.walk(directory):
             for filename in files:
                 rel_path = os.path.join(root, filename)
-                if relative:
+                if relative_to_root:
                     rel_path = os.path.relpath(rel_path, start=settings.MEDIA_ROOT)
                 all_files.append(rel_path)
         return all_files
 
     @classmethod
-    def _get_unreferenced_files(cls):
-        all_files = set(cls._get_all_files())
+    def _get_unreferenced_files(cls, directory=None):
+        all_files = set(cls._get_all_files(directory=directory))
         files_referenced = set(Estimator.objects.filter(estimator_file__in=all_files).values_list('estimator_file', flat=True))
         files_unreferenced = all_files - files_referenced
         return files_unreferenced
@@ -46,9 +47,12 @@ class EstimatorManager():
         return len(unreferenced_files)
 
     @classmethod
-    def load_unreferenced_files(cls):
-        unreferenced_files = cls._get_unreferenced_files()
+    def load_unreferenced_files(cls, directory=None):
+        unreferenced_files = cls._get_unreferenced_files(directory=directory)
         for filename in unreferenced_files:
             m = Estimator.create_from_file(filename)
-            m.save()
+            try:
+                m.save()
+            except:
+                pass
         return len(unreferenced_files)

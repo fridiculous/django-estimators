@@ -100,8 +100,7 @@ class Estimator(models.Model):
         # to force loading a estimator
         if self.is_estimator_persisted:
             self.estimator_file.open()
-            self._estimator = dill.loads(self.estimator_file.read())
-            self.estimator_hash = Estimator._compute_hash(self.estimator)
+            self.estimator = dill.loads(self.estimator_file.read())
             self.estimator_file.close()
 
     @classmethod
