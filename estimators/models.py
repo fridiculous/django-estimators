@@ -6,9 +6,11 @@ import dill
 from django.core.files.base import ContentFile
 from django.core.exceptions import ValidationError
 
+from django.conf import settings
 from django.db import models
 from django.apps import apps
 from estimators import ESTIMATOR_UPLOAD_DIR
+from estimators.managers import EstimatorManager
 
 # original based on sci-kit hashing function
 from estimators import hashing
@@ -42,6 +44,8 @@ class Estimator(models.Model):
     estimator_hash = models.CharField(max_length=64, unique=True, default=None, null=False, editable=False)
     estimator_file = models.FileField(upload_to=ESTIMATOR_UPLOAD_DIR, default=None, null=False, blank=True, editable=False)
     _estimator = None
+
+    objects = EstimatorManager()
 
     class Meta:
         db_table = 'estimators'
@@ -133,3 +137,26 @@ class Estimator(models.Model):
         obj.estimator_file = filename
         obj._load_estimator()
         return obj
+
+    @classmethod
+    def delete_empty_records(cls):
+        empty_records = cls.objects.empty_records()
+        return empty_records.delete()
+
+    @classmethod
+    def delete_unreferenced_files(cls):
+        unreferenced_files = cls.objects.unreferenced_files()
+        for unreferenced_path in unreferenced_files:
+            os.remove(os.path.join(settings.MEDIA_ROOT, unreferenced_path))
+        return len(unreferenced_files)
+
+    @classmethod
+    def load_unreferenced_files(cls, directory=None):
+        unreferenced_files = cls.objects.unreferenced_files(directory=directory)
+        for filename in unreferenced_files:
+            m = cls.create_from_file(filename)
+            try:
+                m.save()
+            except:
+                pass
+        return len(unreferenced_files)
