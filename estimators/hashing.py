@@ -46,9 +46,11 @@ else:
 
 
 class _ConsistentSet(object):
+
     """ Class used to ensure the hash of Sets is preserved
         whatever the order of its items.
     """
+
     def __init__(self, set_sequence):
         # Forces order of elements in set to ensure consistent hash.
         try:
@@ -64,6 +66,7 @@ class _ConsistentSet(object):
 
 
 class _MyHash(object):
+
     """ Class used to hash objects that won't normally pickle """
 
     def __init__(self, *args):
@@ -71,6 +74,7 @@ class _MyHash(object):
 
 
 class Hasher(Pickler):
+
     """ A subclass of pickler, to do cryptographic hashing, rather than
         pickling.
     """
@@ -180,6 +184,7 @@ class Hasher(Pickler):
 
 
 class NumpyHasher(Hasher):
+
     """ Special case the hasher for when numpy is loaded.
     """
 

@@ -16,8 +16,25 @@ from estimators import hashing
 
 class Estimator(models.Model):
 
-    """
-    A class that loads and persists different models
+    """This class creates estimator objects that persists predictive models
+
+        An Estimator instance has multiple attributes
+
+            :description:
+            :estimator:
+
+            >>> from estimators.models import Estimator
+            >>> est = Estimator()
+            >>> est.estimator = object
+            >>> est.description = "k-means with 5 clusters"
+            >>> est.save()
+
+        or
+
+            >>> from estimators.models import Estimator
+            >>> est = Estimator.get_or_create(object)
+            >>> est.description = "kNN without parameter tuning"
+            >>> est.save()
     """
 
     create_date = models.DateTimeField(auto_now_add=True, blank=False, null=False)
@@ -53,6 +70,9 @@ class Estimator(models.Model):
 
     @classmethod
     def get_or_create(cls, estimator):
+        """Returns an existing Estimator instance if found, otherwise creates a new Estimator.
+
+        The recommended constructor for Estimators."""
         estimator_hash = cls._compute_hash(estimator)
         obj = cls.get_by_estimator_hash(estimator_hash)
         if not obj:
@@ -63,7 +83,7 @@ class Estimator(models.Model):
 
     @property
     def estimator(self):
-        # return cached model into cache if the model is available in a file
+        """return the estimator, and load it into memory if it hasn't been loaded yet"""
         if self._estimator is None:
             self._load_estimator()
         return self._estimator
@@ -90,6 +110,7 @@ class Estimator(models.Model):
             raise ValidationError("Cannot persist updated estimator '%s'.  Create a new Estimator object." % self.estimator)
 
     def _persist_estimator(self):
+        """a private method that persists an estimator object to the filesystem"""
         if self.estimator_hash:
             data = dill.dumps(self.estimator)
             f = ContentFile(data)
@@ -99,7 +120,7 @@ class Estimator(models.Model):
         return False
 
     def _load_estimator(self):
-        # to force loading a estimator
+        """a private method that loads an estimator object from the filesystem"""
         if self.is_estimator_persisted:
             self.estimator_file.open()
             self.estimator = dill.loads(self.estimator_file.read())
@@ -107,6 +128,7 @@ class Estimator(models.Model):
 
     @classmethod
     def create_from_file(cls, filename):
+        """Return an Estimator object given the path of the file, relative to the MEDIA_ROOT"""
         obj = cls()
         obj.estimator_file = filename
         obj._load_estimator()
