@@ -16,20 +16,21 @@ class EstimatorManagerCase(TestCase):
 
     def test_unreferenced_files(self):
         with self.settings(MEDIA_ROOT=self.tmp_dir.name):
-            n = Estimator(estimator=dict, description='keep object')
-            n.save()
-            del n
+            kept = Estimator(estimator='object to be kept1')
+            kept.save()
+            no_obj = Estimator(estimator='object to be deleted1')
+            no_obj.save()
+            no_file = Estimator(estimator='file to be deleted1')
+            no_file.save()
 
-            m = Estimator(estimator=object, description='to be deleted object')
-            m.save()
-            filename = m.estimator_file.name
-            m.delete()
-            del m
+            filename = no_obj.estimator_file.name
+            no_obj.delete()
+            del no_obj
 
-            o = Estimator(estimator=list, description='file to be deleted')
-            o.save()
-            os.remove(os.path.join(self.tmp_dir.name, o.estimator_file.name))
-            del o
+            os.remove(os.path.join(self.tmp_dir.name, no_file.estimator_file.name))
+            del no_file
+
+            # run tests
 
             all_files = Estimator.objects.unreferenced_files()
             self.assertEqual(all_files, {filename})
@@ -42,21 +43,21 @@ class EstimatorManagerCase(TestCase):
 
     def test_empty_records(self):
         with self.settings(MEDIA_ROOT=self.tmp_dir.name):
-            n = Estimator(estimator=dict, description='keep object')
-            n.save()
-            del n
+            kept = Estimator(estimator='object to be kept2')
+            kept.save()
+            no_obj = Estimator(estimator='object to be deleted2')
+            no_obj.save()
+            no_file = Estimator(estimator='file to be deleted2')
+            no_file.save()
 
-            m = Estimator(estimator=object, description='to be deleted object')
-            m.save()
-            m.delete()
-            del m
+            no_obj.delete()
+            del no_obj
 
-            o = Estimator(estimator=list, description='file to be deleted')
-            o.save()
-            os.remove(os.path.join(self.tmp_dir.name, o.estimator_file.name))
+            os.remove(os.path.join(self.tmp_dir.name, no_file.estimator_file.name))
 
+            # run tests
             all_estimators = Estimator.objects.empty_records()
-            self.assertEqual(all_estimators[0].estimator_hash, o.estimator_hash)
+            self.assertEqual(all_estimators[0].estimator_hash, no_file.estimator_hash)
 
             deletion = Estimator.delete_empty_records()
             self.assertEqual(deletion[0], 1)
@@ -66,21 +67,21 @@ class EstimatorManagerCase(TestCase):
 
     def test_load_records(self):
         with self.settings(MEDIA_ROOT=self.tmp_dir.name):
-            n = Estimator(estimator=dict, description='keep object')
-            n.save()
-            del n
+            kept = Estimator(estimator='object to be kept3')
+            kept.save()
+            no_obj = Estimator(estimator='object to be deleted3')
+            no_obj.save()
+            no_file = Estimator(estimator='file to be deleted3')
+            no_file.save()
 
-            m = Estimator(estimator=object, description='to be deleted object')
-            m.save()
-            filename = m.estimator_file.name
-            m.delete()
-            del m
+            filename = no_obj.estimator_file.name
+            no_obj.delete()
+            del no_obj
 
-            o = Estimator(estimator=list, description='file to be deleted')
-            o.save()
-            os.remove(os.path.join(self.tmp_dir.name, o.estimator_file.name))
-            del o
+            os.remove(os.path.join(self.tmp_dir.name, no_file.estimator_file.name))
+            del no_file
 
+            # run tests
             unreferenced_files = Estimator.objects.unreferenced_files()
             total_count = Estimator.objects.count()
             self.assertEqual(unreferenced_files, {filename})
