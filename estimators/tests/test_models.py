@@ -1,11 +1,9 @@
-from django.test import TestCase
-
-from estimators.models import Estimator
-import mock
 import os
 import tempfile
 
 from django.core.exceptions import ValidationError
+from django.test import TestCase
+from estimators.models import Estimator
 
 
 class EstimatorCase(TestCase):

@@ -1,12 +1,8 @@
-from django.test import TestCase
-
-from estimators.models import Estimator
-from estimators.managers import EstimatorManager
-import mock
 import os
 import tempfile
 
-from django.core.exceptions import ValidationError
+from django.test import TestCase
+from estimators.models import Estimator
 
 
 class EstimatorManagerCase(TestCase):
@@ -92,7 +88,7 @@ class EstimatorManagerCase(TestCase):
             new_unreferenced_files = Estimator.objects.unreferenced_files()
             new_total_count = Estimator.objects.count()
 
-            self.assertEqual(new_total_count, total_count+1)
+            self.assertEqual(new_total_count, total_count + 1)
             # Note this does not reflect the original file.  Instead it makes a duplicate file.
             self.assertEqual(len(unreferenced_files), len(new_unreferenced_files))
 
