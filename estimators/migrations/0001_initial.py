@@ -20,7 +20,8 @@ class Migration(migrations.Migration):
                 ('create_date', models.DateTimeField(auto_now_add=True)),
                 ('description', models.CharField(max_length=256)),
                 ('estimator_hash', models.CharField(default=None, editable=False, max_length=64, unique=True)),
-                ('estimator_file', models.FileField(blank=True, default=None, editable=False, upload_to='estimators/')),
+                ('estimator_file', models.FileField(
+                    blank=True, default=None, editable=False, upload_to='estimators/')),
             ],
             options={
                 'db_table': 'estimators',

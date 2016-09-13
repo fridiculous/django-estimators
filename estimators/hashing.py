@@ -5,22 +5,20 @@ hashing of numpy arrays.
 """
 
 
-# Copied blatently from scikit-learn hashing module, to remove need for scikits dependancies.
+# Copied blatently from scikit-learn hashing.py
+# to remove need for scikits dependancies.
 
 # Author: Gael Varoquaux <gael dot varoquaux at normalesup dot org>
 # Copyright (c) 2009 Gael Varoquaux
 # License: BSD Style, 3 clauses.
 
-import pickle
 import hashlib
-import sys
-import types
-import struct
 import io
-
-
+import pickle
+import struct
 # Compatibility layer for Python 3/Python 2 single codebase
 import sys
+import types
 
 PY3_OR_LATER = sys.version_info[0] >= 3
 PY26 = sys.version_info[:2] == (2, 6)
