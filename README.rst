@@ -1,13 +1,14 @@
+.. image:: https://travis-ci.org/fridiculous/django-estimators.svg?branch=master
+    :target: https://travis-ci.org/fridiculous/django-estimators
 =====
-django-estimators
+Django-Estimators
 =====
 
-django-estimators helps persist and track machine learning estimators aka models.
+Django-Estimators helps persist and track machine learning models aka estimators.
 
 You can use this to version models, track and deploy models.  It's highly extensible and can be used with almost any python object (scikit-learn, numpy arrays, modules, methods).
 
 -----
-
 
 Quick start
 -----------
