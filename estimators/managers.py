@@ -1,9 +1,7 @@
-import shutil
 import os
 
-from django.apps import apps
-from django.db import models
 from django.conf import settings
+from django.db import models
 from estimators import ESTIMATOR_UPLOAD_DIR
 
 
@@ -17,13 +15,15 @@ class EstimatorManager(models.Manager):
             for filename in files:
                 rel_path = os.path.join(root, filename)
                 if relative_to_root:
-                    rel_path = os.path.relpath(rel_path, start=settings.MEDIA_ROOT)
+                    rel_path = os.path.relpath(
+                        rel_path, start=settings.MEDIA_ROOT)
                 all_files.append(rel_path)
         return all_files
 
     def unreferenced_files(self, directory=None):
         all_files = set(self.all_persisted_files(directory=directory))
-        files_referenced = set(self.filter(estimator_file__in=all_files).values_list('estimator_file', flat=True))
+        files_referenced = set(self.filter(
+            estimator_file__in=all_files).values_list('estimator_file', flat=True))
         files_unreferenced = all_files - files_referenced
         return files_unreferenced
 

@@ -1,19 +1,13 @@
-import datetime
 import os
+
 import dill
-
-
-from django.core.files.base import ContentFile
-from django.core.exceptions import ValidationError
-
 from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.core.files.base import ContentFile
 from django.db import models
-from django.apps import apps
-from estimators import ESTIMATOR_UPLOAD_DIR
-from estimators.managers import EstimatorManager
-
 # original based on sci-kit hashing function
-from estimators import hashing
+from estimators import ESTIMATOR_UPLOAD_DIR, hashing
+from estimators.managers import EstimatorManager
 
 
 class Estimator(models.Model):
@@ -42,7 +36,8 @@ class Estimator(models.Model):
     create_date = models.DateTimeField(auto_now_add=True, blank=False, null=False)
     description = models.CharField(max_length=256)
     estimator_hash = models.CharField(max_length=64, unique=True, default=None, null=False, editable=False)
-    estimator_file = models.FileField(upload_to=ESTIMATOR_UPLOAD_DIR, default=None, null=False, blank=True, editable=False)
+    estimator_file = models.FileField(
+        upload_to=ESTIMATOR_UPLOAD_DIR, default=None, null=False, blank=True, editable=False)
     _estimator = None
 
     objects = EstimatorManager()
@@ -107,11 +102,13 @@ class Estimator(models.Model):
 
     def clean(self):
         if self.estimator_hash != self._compute_hash(self.estimator):
-            raise ValidationError("estimator_hash '%s' should be set by the estimator '%s'" % (self.estimator_hash, self.estimator))
+            raise ValidationError(
+                "estimator_hash '%s' should be set by the estimator '%s'" % (self.estimator_hash, self.estimator))
         # if already persisted, do not update estimator
         obj = self.get_by_estimator_hash(self.estimator_hash)
         if self.id and self.estimator_hash != getattr(obj, 'estimator_hash', None):
-            raise ValidationError("Cannot persist updated estimator '%s'.  Create a new Estimator object." % self.estimator)
+            raise ValidationError(
+                "Cannot persist updated estimator '%s'.  Create a new Estimator object." % self.estimator)
 
     def _persist_estimator(self):
         """a private method that persists an estimator object to the filesystem"""
