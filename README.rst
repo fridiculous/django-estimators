@@ -1,6 +1,10 @@
+
 .. image:: https://travis-ci.org/fridiculous/django-estimators.svg?branch=master
     :target: https://travis-ci.org/fridiculous/django-estimators
-=====
+
+.. image:: https://landscape.io/github/fridiculous/django-estimators/master/landscape.svg?style=flat
+   :target: https://landscape.io/github/fridiculous/django-estimators/master
+   
 Django-Estimators
 =====
 
