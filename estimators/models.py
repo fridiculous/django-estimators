@@ -84,7 +84,7 @@ class Estimator(models.Model):
     def estimator(self):
         """return the estimator, and load it into memory if it hasn't been loaded yet"""
         if self._estimator is None:
-            self._load_estimator()
+            self.load_estimator()
         return self._estimator
 
     @estimator.setter
@@ -97,7 +97,7 @@ class Estimator(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean(exclude=['description'])
         if not self.is_estimator_persisted:
-            self._persist_estimator()
+            self.persist_estimator()
         super(Estimator, self).save(*args, **kwargs)
 
     def clean(self):
@@ -110,7 +110,7 @@ class Estimator(models.Model):
             raise ValidationError(
                 "Cannot persist updated estimator '%s'.  Create a new Estimator object." % self.estimator)
 
-    def _persist_estimator(self):
+    def persist_estimator(self):
         """a private method that persists an estimator object to the filesystem"""
         if self.estimator_hash:
             data = dill.dumps(self.estimator)
@@ -120,7 +120,7 @@ class Estimator(models.Model):
             return True
         return False
 
-    def _load_estimator(self):
+    def load_estimator(self):
         """a private method that loads an estimator object from the filesystem"""
         if self.is_estimator_persisted:
             self.estimator_file.open()
@@ -132,7 +132,7 @@ class Estimator(models.Model):
         """Return an Estimator object given the path of the file, relative to the MEDIA_ROOT"""
         obj = cls()
         obj.estimator_file = filename
-        obj._load_estimator()
+        obj.load_estimator()
         return obj
 
     @classmethod
@@ -151,9 +151,6 @@ class Estimator(models.Model):
     def load_unreferenced_files(cls, directory=None):
         unreferenced_files = cls.objects.unreferenced_files(directory=directory)
         for filename in unreferenced_files:
-            m = cls.create_from_file(filename)
-            try:
-                m.save()
-            except:
-                pass
+            obj = cls.create_from_file(filename)
+            obj.save()
         return len(unreferenced_files)
