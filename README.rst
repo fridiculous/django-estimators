@@ -14,6 +14,16 @@ You can use this to version models, track and deploy models.  It's highly extens
 
 -----
 
+
+Installation
+------------
+
+
+Django-estimators is on PyPI, so just run: ::
+
+    pip install django-estimators
+
+
 Quick start
 -----------
 
@@ -47,15 +57,6 @@ Quick start
 
     # now predict using a given feature matrix
     est.estimator.predict(X)
-
-
-Installation
-------------
-
-
-Django-estimators is on PyPI, so just run: ::
-
-    pip install django-estimators
 
 
 
