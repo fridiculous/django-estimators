@@ -9,7 +9,7 @@ with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
 install_reqs = parse_requirements(
     os.path.join(os.path.dirname(__file__), 'requirements.txt'), session=False)
 reqs = [str(ir.req) for ir in install_reqs]
-print(reqs)
+
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
