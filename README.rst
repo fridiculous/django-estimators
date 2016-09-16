@@ -27,38 +27,36 @@ Django-estimators is on PyPI, so just run: ::
 Quick start
 -----------
 
-1. Add "estimators" to your INSTALLED_APPS django setting like this::
+1. Add "estimators" to your INSTALLED_APPS django setting like this
+::
 
     INSTALLED_APPS = [
         ...
         'estimators',
     ]
+  
+2. To create the estimators table, run
+::
+    python manage.py migrate
 
-2. Run `python manage.py migrate` to create the estimators table.
-
-3. Run `python manage.py shell` and get create new models like so::
+3. Run `python manage.py shell` and get create new models like so
+::
+    from estimators.models import Estimator
+    est = Estimator()
 
     # uses sklearn, but any object would work
     from sklearn.ensemble import RandomForestClassifier
-    rfc = RandomForestClassifer()
-
-    from estimators.models import Estimator
-    est = Estimator()
-    est.estimator = rfc
+    est.estimator = RandomForestClassifer()
+    
     est.description = 'a simple stats model'
     est.save()
 
+4.  Retrieve your model, using the usual django orm at a later time
+::
 
-
-4.  Retrieve your model, using the usual django orm at a later time::
-
-    from estimators.models import Estimator
     est = Estimator.objects.filter(description='a simple stats model')
-
-    # now predict using a given feature matrix
+    # now use your estimator
     est.estimator.predict(X)
-
-
 
 Using with Notebook (or without django shell)
 ---------------------------------------------
