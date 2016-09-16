@@ -53,9 +53,9 @@ Installation
 ------------
 
 
-Django-estimators will soon be available on PyPI.  In the meantime, to install it, just run: ::
+Django-estimators is on PyPI, so just run: ::
 
-    pip install git+https://github.com/fridiculous/django-estimators.git
+    pip install django-estimators
 
 
 

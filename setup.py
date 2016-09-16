@@ -9,13 +9,13 @@ with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
 install_reqs = parse_requirements(
     os.path.join(os.path.dirname(__file__), 'requirements.txt'), session=False)
 reqs = [str(ir.req) for ir in install_reqs]
-
+print(reqs)
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-estimators',
-    version='0.1',
+    version='0.1.0.dev',
     packages=find_packages(),
     include_package_data=True,
     install_requires=reqs,
@@ -29,6 +29,7 @@ setup(
         'Environment :: Web Environment',
         'Framework :: Django',
         'Framework :: Django :: 1.9',
+        'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: MIT License',  # example license
@@ -44,4 +45,5 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Software Development :: Version Control',
     ],
+    keywords='scikit-learn, machine learning, ml, estimators, version control'
 )
