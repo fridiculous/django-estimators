@@ -83,11 +83,5 @@ celerybeat-schedule
 venv/
 ENV/
 
-# Spyder project settings
-.spyderproject
-
-# Rope project settings
-.ropeproject
-
 # Sqlite3 db
 *.sqlite3
