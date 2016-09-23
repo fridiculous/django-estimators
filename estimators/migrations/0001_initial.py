@@ -19,8 +19,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('create_date', models.DateTimeField(auto_now_add=True)),
                 ('description', models.CharField(max_length=256)),
-                ('estimator_hash', models.CharField(default=None, editable=False, max_length=64, unique=True)),
-                ('estimator_file', models.FileField(
+                ('object_hash', models.CharField(default=None, editable=False, max_length=64, unique=True)),
+                ('object_file', models.FileField(
                     blank=True, default=None, editable=False, upload_to='estimators/')),
             ],
             options={
