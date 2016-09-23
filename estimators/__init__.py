@@ -1,15 +1,17 @@
 from django.conf import settings
 import os
 
-ESTIMATOR_UPLOAD_DIR = getattr(settings, "ESTIMATOR_UPLOAD_DIR", 'estimators/')
+ESTIMATOR_DIR = getattr(settings, "ESTIMATOR_UPLOAD_DIR", 'estimators/')
 FEATURE_MATRIX_DIR = getattr(settings, "FEATURE_MATRIX_DIR", 'feature_datasets/')
 TARGET_VECTOR_DIR = getattr(settings, "TARGET_VECTOR_DIR", 'target_datasets/')
+PREDICTED_VECTOR_DIR = getattr(settings, "PREDICTED_VECTOR_DIR", 'predicted_datasets/')
 
 
 files_map = {
-    'estimator': ESTIMATOR_UPLOAD_DIR,
-    'FeatureMatrix': FEATURE_MATRIX_DIR,
-    'TargetVector': TARGET_VECTOR_DIR,
+    '_estimator': ESTIMATOR_DIR,
+    '_dataframe': FEATURE_MATRIX_DIR,
+    '_array': TARGET_VECTOR_DIR,
+    '_array': PREDICTED_VECTOR_DIR,
 }
 
 

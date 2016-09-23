@@ -2,7 +2,6 @@ import os
 import tempfile
 
 from django.test import TestCase
-
 from estimators.models import Estimator
 
 

@@ -1,10 +1,10 @@
 import os
+from itertools import chain
 
 from django.conf import settings
 from django.db import models
-
-from estimators import (ESTIMATOR_UPLOAD_DIR, FEATURE_MATRIX_DIR,
-                        TARGET_VECTOR_DIR)
+from estimators import (ESTIMATOR_DIR, FEATURE_MATRIX_DIR,
+                        PREDICTED_VECTOR_DIR, TARGET_VECTOR_DIR)
 
 
 class AbstractPersistanceManager(models.Manager):
@@ -22,6 +22,22 @@ class AbstractPersistanceManager(models.Manager):
                 all_files.append(rel_path)
         return all_files
 
+    def group_persisted_files_by_hash(self):
+        file_hash_groups = {}
+        for f in self.all_persisted_files():
+            file_hash = f.split('/')[-1].split('_')[0]
+            if not file_hash_groups.get(file_hash):
+                file_hash_groups[file_hash] = [f]
+            else:
+                file_hash_groups[file_hash].append(f)
+        return file_hash_groups
+
+    def all_duplicated_files(self):
+        return list(chain.from_iterable([i[1:] for i in self.group_persisted_files_by_hash().values()]))
+
+    def all_unique_files(self):
+        return [i[0] for i in self.group_persisted_files_by_hash().values()]
+
     def unreferenced_files(self, directory=None):
         all_files = set(self.all_persisted_files(directory=directory))
         files_referenced = set(self.filter(
@@ -38,16 +54,22 @@ class AbstractPersistanceManager(models.Manager):
 class EstimatorManager(AbstractPersistanceManager):
 
     def all_persisted_files(self, *args, **kwargs):
-        return super().all_persisted_files(*args, **kwargs, UPLOAD_DIR=ESTIMATOR_UPLOAD_DIR)
+        return super().all_persisted_files(*args, UPLOAD_DIR=ESTIMATOR_DIR, **kwargs)
 
 
 class FeatureMatrixManager(AbstractPersistanceManager):
 
     def all_persisted_files(self, *args, **kwargs):
-        return super().all_persisted_files(*args, **kwargs, UPLOAD_DIR=FEATURE_MATRIX_DIR)
+        return super().all_persisted_files(*args, UPLOAD_DIR=FEATURE_MATRIX_DIR, **kwargs)
 
 
 class TargetManager(AbstractPersistanceManager):
 
     def all_persisted_files(self, *args, **kwargs):
-        return super().all_persisted_files(*args, **kwargs, UPLOAD_DIR=TARGET_VECTOR_DIR)
+        return super().all_persisted_files(*args, UPLOAD_DIR=TARGET_VECTOR_DIR, **kwargs)
+
+
+class PredictedManager(AbstractPersistanceManager):
+
+    def all_persisted_files(self, *args, **kwargs):
+        return super().all_persisted_files(*args, UPLOAD_DIR=PREDICTED_VECTOR_DIR, **kwargs)
