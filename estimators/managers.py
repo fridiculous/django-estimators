@@ -3,15 +3,15 @@ import os
 from django.conf import settings
 from django.db import models
 
-from estimators import ESTIMATOR_UPLOAD_DIR
+from estimators import (ESTIMATOR_UPLOAD_DIR, FEATURE_MATRIX_DIR,
+                        TARGET_VECTOR_DIR)
 
 
-class EstimatorManager(models.Manager):
+class AbstractPersistanceManager(models.Manager):
 
-    def all_persisted_files(self, directory=None, relative_to_root=True):
-
+    def all_persisted_files(self, directory=None, relative_to_root=True, UPLOAD_DIR=''):
         if directory is None:
-            directory = os.path.join(settings.MEDIA_ROOT, ESTIMATOR_UPLOAD_DIR)
+            directory = os.path.join(settings.MEDIA_ROOT, UPLOAD_DIR)
         all_files = []
         for root, dirs, files in os.walk(directory):
             for filename in files:
@@ -33,3 +33,21 @@ class EstimatorManager(models.Manager):
         all_files = self.all_persisted_files()
         empty_records = self.exclude(object_file__in=all_files).all()
         return empty_records
+
+
+class EstimatorManager(AbstractPersistanceManager):
+
+    def all_persisted_files(self, *args, **kwargs):
+        return super().all_persisted_files(*args, **kwargs, UPLOAD_DIR=ESTIMATOR_UPLOAD_DIR)
+
+
+class FeatureMatrixManager(AbstractPersistanceManager):
+
+    def all_persisted_files(self, *args, **kwargs):
+        return super().all_persisted_files(*args, **kwargs, UPLOAD_DIR=FEATURE_MATRIX_DIR)
+
+
+class TargetManager(AbstractPersistanceManager):
+
+    def all_persisted_files(self, *args, **kwargs):
+        return super().all_persisted_files(*args, **kwargs, UPLOAD_DIR=TARGET_VECTOR_DIR)

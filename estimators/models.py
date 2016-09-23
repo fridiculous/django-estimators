@@ -60,6 +60,19 @@ class AbstractPersistObject(models.Model):
             self.object_file.close()
 
     @classmethod
+    def get_or_create(cls, obj):
+        """Returns an existing Estimator instance if found, otherwise creates a new Estimator.
+
+        The recommended constructor for Estimators."""
+        object_hash = cls._compute_hash(obj)
+        instance = cls.get_by_hash(object_hash)
+        if not instance:
+            # create object
+            instance = cls()
+            instance.set_abstract_object(obj)
+        return instance
+
+    @classmethod
     def create_from_file(cls, filename):
         """Return an Estimator object given the path of the file, relative to the MEDIA_ROOT"""
         obj = cls()
@@ -129,19 +142,6 @@ class Estimator(AbstractPersistObject):
         if est is not None:
             object_hash = cls._compute_hash(est)
         return cls.get_by_hash(object_hash)
-
-    @classmethod
-    def get_or_create(cls, estimator):
-        """Returns an existing Estimator instance if found, otherwise creates a new Estimator.
-
-        The recommended constructor for Estimators."""
-        object_hash = cls._compute_hash(estimator)
-        obj = cls.get_by_hash(object_hash)
-        if not obj:
-            # create object
-            obj = cls()
-            obj.estimator = estimator
-        return obj
 
     @property
     def estimator(self):
