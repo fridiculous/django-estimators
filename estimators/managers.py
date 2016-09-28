@@ -3,7 +3,7 @@ from itertools import chain
 
 from django.conf import settings
 from django.db import models
-from estimators import (ESTIMATOR_DIR, FEATURE_MATRIX_DIR,
+from estimators import (DATASET_DIR, ESTIMATOR_DIR, FEATURE_MATRIX_DIR,
                         PREDICTED_VECTOR_DIR, TARGET_VECTOR_DIR)
 
 
@@ -57,6 +57,13 @@ class EstimatorManager(AbstractPersistanceManager):
         return super().all_persisted_files(*args, UPLOAD_DIR=ESTIMATOR_DIR, **kwargs)
 
 
+class PersistedDataSetManager(AbstractPersistanceManager):
+
+    def all_persisted_files(self, *args, **kwargs):
+        return super().all_persisted_files(*args, UPLOAD_DIR=DATASET_DIR, **kwargs)
+
+'''
+
 class FeatureMatrixManager(AbstractPersistanceManager):
 
     def all_persisted_files(self, *args, **kwargs):
@@ -73,3 +80,4 @@ class PredictedManager(AbstractPersistanceManager):
 
     def all_persisted_files(self, *args, **kwargs):
         return super().all_persisted_files(*args, UPLOAD_DIR=PREDICTED_VECTOR_DIR, **kwargs)
+'''

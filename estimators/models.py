@@ -70,6 +70,11 @@ class AbstractPersistObject(models.Model):
             self.set_object_property(temp)
             self.object_file.close()
 
+    def save(self, *args, **kwargs):
+        if not self.is_persisted:
+            self.persist()
+        super().save(*args, **kwargs)
+
     @classmethod
     def get_or_create(cls, obj):
         """Returns an existing Estimator instance if found, otherwise creates a new Estimator.
@@ -172,9 +177,7 @@ class Estimator(AbstractPersistObject):
 
     def save(self, *args, **kwargs):
         self.full_clean(exclude=['description'])
-        if not self.is_persisted:
-            self.persist()
-        super(Estimator, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def clean(self):
         if self.object_hash != self._compute_hash(self.estimator):
