@@ -1,8 +1,6 @@
+
 from django.db import models
-
 from estimators.models import AbstractPersistObject
-
-import dill
 
 
 class DataSet(AbstractPersistObject):

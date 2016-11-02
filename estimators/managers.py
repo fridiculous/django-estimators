@@ -3,13 +3,13 @@ from itertools import chain
 
 from django.conf import settings
 from django.db import models
-from estimators import (DATASET_DIR, ESTIMATOR_DIR, FEATURE_MATRIX_DIR,
-                        PREDICTED_VECTOR_DIR, TARGET_VECTOR_DIR)
+from estimators import DATASET_DIR, ESTIMATOR_DIR
 
 
 class AbstractPersistanceManager(models.Manager):
 
-    def all_persisted_files(self, directory=None, relative_to_root=True, UPLOAD_DIR=''):
+    def all_persisted_files(self, directory=None,
+                            relative_to_root=True, UPLOAD_DIR=''):
         if directory is None:
             directory = os.path.join(settings.MEDIA_ROOT, UPLOAD_DIR)
         all_files = []
@@ -33,7 +33,8 @@ class AbstractPersistanceManager(models.Manager):
         return file_hash_groups
 
     def all_duplicated_files(self):
-        return list(chain.from_iterable([i[1:] for i in self.group_persisted_files_by_hash().values()]))
+        return list(chain.from_iterable(
+            [i[1:] for i in self.group_persisted_files_by_hash().values()]))
 
     def all_unique_files(self):
         return [i[0] for i in self.group_persisted_files_by_hash().values()]

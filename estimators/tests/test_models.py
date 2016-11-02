@@ -23,7 +23,8 @@ class EstimatorCase(TestCase):
             self.assertEqual(n.object_hash, 'd9c9f286391652b89978a6961b52b674')
             # assert loaded after calling n.estimator
             self.assertEquals(n.estimator, object)
-            self.assertEquals(Estimator._compute_hash(object), 'd9c9f286391652b89978a6961b52b674')
+            self.assertEquals(Estimator._compute_hash(
+                object), 'd9c9f286391652b89978a6961b52b674')
 
     def test_estimator_persistance(self):
         with self.settings(MEDIA_ROOT=self.tmp_dir.name):

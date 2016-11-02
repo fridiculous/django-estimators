@@ -13,9 +13,16 @@ from estimators.managers import EstimatorManager
 
 class AbstractPersistObject(models.Model):
 
-    create_date = models.DateTimeField(auto_now_add=True, blank=False, null=False)
-    object_hash = models.CharField(max_length=64, unique=True, default=None, null=False, editable=False)
-    object_file = models.FileField(upload_to=get_upload_path, default=None, null=False, blank=True, editable=False)
+    create_date = models.DateTimeField(
+        auto_now_add=True, blank=False, null=False)
+    object_hash = models.CharField(
+        max_length=64, unique=True, default=None, null=False, editable=False)
+    object_file = models.FileField(
+        upload_to=get_upload_path,
+        default=None,
+        null=False,
+        blank=True,
+        editable=False)
 
     _object_property = 'abstract_object'
 
@@ -24,7 +31,8 @@ class AbstractPersistObject(models.Model):
 
     @property
     def is_persisted(self):
-        return self.object_file.name is not None and os.path.isfile(self.object_file.path)
+        return self.object_file.name is not None and os.path.isfile(
+            self.object_file.path)
 
     @classmethod
     def _compute_hash(cls, obj):
@@ -81,11 +89,15 @@ class AbstractPersistObject(models.Model):
 
         The recommended constructor for Estimators."""
         object_hash = cls._compute_hash(obj)
-        instance = cls.get_by_hash(object_hash)
-        if not instance:
+        # instance = cls.get_by_hash(object_hash)
+        try:
+            instance = cls.objects.get(object_hash=object_hash)
+            instance.save()
+        except getattr(cls, "DoesNotExist"):
             # create object
             instance = cls()
             instance.set_object_property(obj)
+            instance.save()
         return instance
 
     @classmethod
@@ -117,7 +129,8 @@ class AbstractPersistObject(models.Model):
 
     @classmethod
     def load_unreferenced_files(cls, directory=None):
-        unreferenced_files = cls.objects.unreferenced_files(directory=directory)
+        unreferenced_files = cls.objects.unreferenced_files(
+            directory=directory)
         for filename in unreferenced_files:
             obj = cls.create_from_file(filename)
             obj.save()
@@ -158,7 +171,8 @@ class Estimator(AbstractPersistObject):
         db_table = 'estimators'
 
     def __repr__(self):
-        return '<Estimator <Id %s> <Hash %s>: %s>' % (self.id, self.object_hash, self.estimator)
+        return '<Estimator <Id %s> <Hash %s>: %s>' % (
+            self.id, self.object_hash, self.estimator)
 
     @classmethod
     def get_by_estimator(cls, est):
@@ -182,9 +196,11 @@ class Estimator(AbstractPersistObject):
     def clean(self):
         if self.object_hash != self._compute_hash(self.estimator):
             raise ValidationError(
-                "object_hash '%s' should be set by the estimator '%s'" % (self.object_hash, self.estimator))
+                "object_hash '%s' should be set by the estimator '%s'" %
+                (self.object_hash, self.estimator))
         # if already persisted, do not update estimator
         obj = self.get_by_hash(self.object_hash)
         if self.id and self.object_hash != getattr(obj, 'object_hash', None):
             raise ValidationError(
-                "Cannot persist updated estimator '%s'.  Create a new Estimator object." % self.estimator)
+                "Cannot persist updated estimator '%s'.  Create a new Estimator object." %
+                self.estimator)
