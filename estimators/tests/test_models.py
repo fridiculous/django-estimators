@@ -3,7 +3,7 @@ import tempfile
 
 from django.core.exceptions import ValidationError
 from django.test import TestCase
-from estimators.models import Estimator
+from estimators.models.estimators import Estimator
 
 
 class EstimatorCase(TestCase):

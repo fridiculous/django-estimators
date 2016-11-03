@@ -1,8 +1,8 @@
 
 
-from datasets.models import DataSet
 from django.db import models
-from estimators.models import Estimator
+from estimators.models.datasets import DataSet
+from estimators.models.estimators import Estimator
 
 
 class EvaluationMixin(object):
