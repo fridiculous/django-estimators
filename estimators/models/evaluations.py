@@ -80,18 +80,15 @@ class Evaluator(EvaluationMixin):
             'estimator': self.estimator,
         }
         er = EvaluationResult(**options)
-        self.persist_results(er)
+        if persist:
+            self.persist_results(er)
         return er
 
     def persist_results(self, er):
-        er._estimator_proxy = er._estimator_proxy.__class__.get_or_create(
-            er._estimator_proxy.estimator)
-        er._X_test_proxy = er._X_test_proxy.__class__.get_or_create(
-            er._X_test_proxy.data)
-        er._y_test_proxy = er._y_test_proxy.__class__.get_or_create(
-            er._y_test_proxy.data)
-        er._y_predicted_proxy = er._y_predicted_proxy.__class__.get_or_create(
-            er._y_predicted_proxy.data)
+        er._estimator_proxy = Estimator.get_or_create(er._estimator_proxy.estimator)
+        er._X_test_proxy = DataSet.get_or_create(er._X_test_proxy.data)
+        er._y_test_proxy = DataSet.get_or_create(er._y_test_proxy.data)
+        er._y_predicted_proxy = DataSet.get_or_create(er._y_predicted_proxy.data)
         er.save()
 
     def __repr__(self):
@@ -101,31 +98,18 @@ class Evaluator(EvaluationMixin):
 
 class EvaluationResult(EvaluationMixin, models.Model):
 
-    create_date = models.DateTimeField(
-        auto_now_add=True, blank=False, null=False)
+    create_date = models.DateTimeField(auto_now_add=True, blank=False, null=False)
     _estimator_proxy = models.ForeignKey(
         Estimator, on_delete=models.CASCADE, null=False, blank=False)
     _X_test_proxy = models.ForeignKey(
-        DataSet,
-        on_delete=models.CASCADE,
-        null=False,
-        blank=False,
-        related_name='X_test')
+        DataSet, on_delete=models.CASCADE, null=False, blank=False, related_name='X_test')
     _y_test_proxy = models.ForeignKey(
-        DataSet,
-        on_delete=models.CASCADE,
-        null=False,
-        blank=True,
-        related_name='y_test')
+        DataSet, on_delete=models.CASCADE, null=False, blank=True, related_name='y_test')
     _y_predicted_proxy = models.ForeignKey(
-        DataSet,
-        on_delete=models.CASCADE,
-        null=True,
-        related_name='y_predicted')
+        DataSet, on_delete=models.CASCADE, null=True, related_name='y_predicted')
 
     class Meta:
         db_table = 'evaluation_results'
 
     def __repr__(self):
-        return '<EvaluationResult <Id %s>' % (
-            self.id)
+        return '<EvaluationResult <Id %s>' % (self.id)

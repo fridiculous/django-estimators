@@ -13,18 +13,13 @@ from estimators.managers import EstimatorManager
 
 class AbstractPersistObject(models.Model):
 
-    create_date = models.DateTimeField(
-        auto_now_add=True, blank=False, null=False)
+    create_date = models.DateTimeField(auto_now_add=True, blank=False, null=False)
     object_hash = models.CharField(
         max_length=64, unique=True, default=None, null=False, editable=False)
     object_file = models.FileField(
-        upload_to=get_upload_path,
-        default=None,
-        null=False,
-        blank=True,
-        editable=False)
+        upload_to=get_upload_path, default=None, null=False, blank=True, editable=False)
 
-    _object_property = 'abstract_object'
+    _object_property_name = NotImplementedError()
 
     class Meta:
         abstract = True
@@ -44,10 +39,10 @@ class AbstractPersistObject(models.Model):
         return query_set.first()
 
     def get_abstract_object(self):
-        return getattr(self, self._object_property)
+        return getattr(self, self._object_property_name)
 
     def set_abstract_object(self, obj):
-        return setattr(self, self._object_property, obj)
+        return setattr(self, self._object_property_name, obj)
 
     def get_object_as_property(self):
         if self.get_abstract_object() is None:
@@ -92,7 +87,6 @@ class AbstractPersistObject(models.Model):
         # instance = cls.get_by_hash(object_hash)
         try:
             instance = cls.objects.get(object_hash=object_hash)
-            instance.save()
         except getattr(cls, "DoesNotExist"):
             # create object
             instance = cls()
@@ -163,7 +157,7 @@ class Estimator(AbstractPersistObject):
     description = models.CharField(max_length=256)
     _estimator = None
     # required by base class, to refer to the estimator property
-    _object_property = '_estimator'
+    _object_property_name = '_estimator'
 
     objects = EstimatorManager()
 

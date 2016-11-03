@@ -7,9 +7,7 @@ class DataSet(AbstractPersistObject):
 
     description = models.CharField(max_length=256)
     _data = None
-    _object_property = '_data'
-
-    _data = None
+    _object_property_name = '_data'
 
     class Meta:
         db_table = 'data_sets'

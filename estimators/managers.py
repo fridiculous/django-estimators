@@ -58,27 +58,7 @@ class EstimatorManager(AbstractPersistanceManager):
         return super().all_persisted_files(*args, UPLOAD_DIR=ESTIMATOR_DIR, **kwargs)
 
 
-class PersistedDataSetManager(AbstractPersistanceManager):
+class DataSetManager(AbstractPersistanceManager):
 
     def all_persisted_files(self, *args, **kwargs):
         return super().all_persisted_files(*args, UPLOAD_DIR=DATASET_DIR, **kwargs)
-
-'''
-
-class FeatureMatrixManager(AbstractPersistanceManager):
-
-    def all_persisted_files(self, *args, **kwargs):
-        return super().all_persisted_files(*args, UPLOAD_DIR=FEATURE_MATRIX_DIR, **kwargs)
-
-
-class TargetManager(AbstractPersistanceManager):
-
-    def all_persisted_files(self, *args, **kwargs):
-        return super().all_persisted_files(*args, UPLOAD_DIR=TARGET_VECTOR_DIR, **kwargs)
-
-
-class PredictedManager(AbstractPersistanceManager):
-
-    def all_persisted_files(self, *args, **kwargs):
-        return super().all_persisted_files(*args, UPLOAD_DIR=PREDICTED_VECTOR_DIR, **kwargs)
-'''
