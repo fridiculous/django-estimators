@@ -16,6 +16,7 @@ class AbstractPersistObject(models.Model):
     object_file = models.FileField(
         upload_to=get_upload_path, default=None, null=False, blank=True, editable=False)
 
+    _object_arg_name = NotImplementedError()
     _object_property_name = NotImplementedError()
 
     class Meta:
@@ -35,27 +36,29 @@ class AbstractPersistObject(models.Model):
         query_set = cls.objects.filter(object_hash=object_hash)
         return query_set.first()
 
-    def get_abstract_object(self):
+    @property
+    def object_property(self):
         return getattr(self, self._object_property_name)
 
-    def set_abstract_object(self, obj):
+    @object_property.setter
+    def object_property(self, obj):
         return setattr(self, self._object_property_name, obj)
 
-    def get_object_as_property(self):
-        if self.get_abstract_object() is None:
+    def get_object(self):
+        if self.object_property is None:
             self.load()
-        return self.get_abstract_object()
+        return self.object_property
 
-    def set_object_property(self, value):
+    def set_object(self, value):
         object_hash = self._compute_hash(value)
-        self.set_abstract_object(value)
+        self.object_property = value
         self.object_hash = object_hash
         self.object_file.name = self.object_hash
 
     def persist(self):
         """a private method that persists an estimator object to the filesystem"""
         if self.object_hash:
-            data = dill.dumps(self.get_abstract_object())
+            data = dill.dumps(self.object_property)
             f = ContentFile(data)
             self.object_file.save(self.object_hash, f)
             f.close()
@@ -67,7 +70,7 @@ class AbstractPersistObject(models.Model):
         if self.is_persisted:
             self.object_file.open()
             temp = dill.loads(self.object_file.read())
-            self.set_object_property(temp)
+            self.set_object(temp)
             self.object_file.close()
 
     def save(self, *args, **kwargs):
@@ -87,7 +90,7 @@ class AbstractPersistObject(models.Model):
         except getattr(cls, "DoesNotExist"):
             # create object
             instance = cls()
-            instance.set_object_property(obj)
+            instance.set_object(obj)
             instance.save()
         return instance
 

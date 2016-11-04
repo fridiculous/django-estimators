@@ -15,11 +15,11 @@ class DataSet(AbstractPersistObject):
     @property
     def data(self):
         """return the dataframe, and load it into memory if it hasn't been loaded yet"""
-        return self.get_object_as_property()
+        return self.get_object()
 
     @data.setter
     def data(self, obj):
-        self.set_object_property(obj)
+        self.set_object(obj)
 
     def save(self, *args, **kwargs):
         self.full_clean(exclude=['description'])

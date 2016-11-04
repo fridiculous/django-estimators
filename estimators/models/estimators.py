@@ -51,11 +51,11 @@ class Estimator(AbstractPersistObject):
     @property
     def estimator(self):
         """return the estimator, and load it into memory if it hasn't been loaded yet"""
-        return self.get_object_as_property()
+        return self.get_object()
 
     @estimator.setter
     def estimator(self, obj):
-        self.set_object_property(obj)
+        self.set_object(obj)
 
     def save(self, *args, **kwargs):
         self.full_clean(exclude=['description'])
