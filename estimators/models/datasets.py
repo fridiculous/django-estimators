@@ -1,6 +1,6 @@
 
 from django.db import models
-from estimators.models.estimators import AbstractPersistObject
+from estimators.models.base import AbstractPersistObject
 
 
 class DataSet(AbstractPersistObject):
