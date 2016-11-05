@@ -2,7 +2,7 @@ import os
 import tempfile
 
 from django.test import TestCase
-from estimators.models import Estimator
+from estimators.models.estimators import Estimator
 
 
 class EstimatorManagerCase(TestCase):
@@ -19,15 +19,17 @@ class EstimatorManagerCase(TestCase):
             no_file = Estimator(estimator='file to be deleted1')
             no_file.save()
 
-            filename = no_obj.estimator_file.name
+            filename = no_obj.object_file.name
             no_obj.delete()
             del no_obj
 
-            os.remove(os.path.join(self.tmp_dir.name, no_file.estimator_file.name))
+            os.remove(
+                os.path.join(
+                    self.tmp_dir.name,
+                    no_file.object_file.name))
             del no_file
 
             # run tests
-
             all_files = Estimator.objects.unreferenced_files()
             self.assertEqual(all_files, {filename})
 
@@ -49,11 +51,15 @@ class EstimatorManagerCase(TestCase):
             no_obj.delete()
             del no_obj
 
-            os.remove(os.path.join(self.tmp_dir.name, no_file.estimator_file.name))
+            os.remove(
+                os.path.join(
+                    self.tmp_dir.name,
+                    no_file.object_file.name))
 
             # run tests
             all_estimators = Estimator.objects.empty_records()
-            self.assertEqual(all_estimators[0].estimator_hash, no_file.estimator_hash)
+            self.assertEqual(
+                all_estimators[0].object_hash, no_file.object_hash)
 
             deletion = Estimator.delete_empty_records()
             self.assertEqual(deletion[0], 1)
@@ -70,11 +76,14 @@ class EstimatorManagerCase(TestCase):
             no_file = Estimator(estimator='file to be deleted3')
             no_file.save()
 
-            filename = no_obj.estimator_file.name
+            filename = no_obj.object_file.name
             no_obj.delete()
             del no_obj
 
-            os.remove(os.path.join(self.tmp_dir.name, no_file.estimator_file.name))
+            os.remove(
+                os.path.join(
+                    self.tmp_dir.name,
+                    no_file.object_file.name))
             del no_file
 
             # run tests
@@ -89,8 +98,10 @@ class EstimatorManagerCase(TestCase):
             new_total_count = Estimator.objects.count()
 
             self.assertEqual(new_total_count, total_count + 1)
-            # Note this does not reflect the original file.  Instead it makes a duplicate file.
-            self.assertEqual(len(unreferenced_files), len(new_unreferenced_files))
+            # Note this does not reflect the original file.  Instead it makes a
+            # duplicate file.
+            self.assertEqual(len(unreferenced_files),
+                             len(new_unreferenced_files))
 
     def tearDown(self):
         self.tmp_dir.cleanup()

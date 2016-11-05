@@ -82,7 +82,7 @@ If you already have the model::
 
 If you know the unique hash of the model::
 
-    est = Estimator.get_by_estimator_hash('358e500ba0643ec82d15cbfa8adc114c')
+    est = Estimator.get_by_hash('358e500ba0643ec82d15cbfa8adc114c')
 
 
 If you aren't sure if it exists, the recommended method is to use the `get_or_create` method::
