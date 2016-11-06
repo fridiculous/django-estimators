@@ -1,9 +1,8 @@
-
 from django.db import models
-from estimators.models.base import AbstractPersistObject
+from estimators.models.base import HashableFileMixin
 
 
-class DataSet(AbstractPersistObject):
+class DataSet(HashableFileMixin):
 
     description = models.CharField(max_length=256)
     _data = None

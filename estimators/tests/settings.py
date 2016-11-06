@@ -16,7 +16,6 @@ DATABASES = {
     }
 }
 
-
 # Use nose to run all tests
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
@@ -27,3 +26,5 @@ NOSE_ARGS = [
 ]
 
 MIDDLEWARE_CLASSES = []
+
+MEDIA_ROOT = 'tmp/'

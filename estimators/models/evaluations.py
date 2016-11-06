@@ -1,6 +1,7 @@
 
 
 from django.db import models
+from estimators.models.base import PrimaryMixin
 from estimators.models.datasets import DataSet
 from estimators.models.estimators import Estimator
 
@@ -85,10 +86,12 @@ class Evaluator(EvaluationMixin):
         return er
 
     def persist_results(self, er):
-        er._estimator_proxy = Estimator.get_or_create(er._estimator_proxy.estimator)
+        er._estimator_proxy = Estimator.get_or_create(
+            er._estimator_proxy.estimator)
         er._X_test_proxy = DataSet.get_or_create(er._X_test_proxy.data)
         er._y_test_proxy = DataSet.get_or_create(er._y_test_proxy.data)
-        er._y_predicted_proxy = DataSet.get_or_create(er._y_predicted_proxy.data)
+        er._y_predicted_proxy = DataSet.get_or_create(
+            er._y_predicted_proxy.data)
         er.save()
 
     def __repr__(self):
@@ -96,9 +99,8 @@ class Evaluator(EvaluationMixin):
             self.X_test, self.estimator)
 
 
-class EvaluationResult(EvaluationMixin, models.Model):
+class EvaluationResult(EvaluationMixin, PrimaryMixin, models.Model):
 
-    create_date = models.DateTimeField(auto_now_add=True, blank=False, null=False)
     _estimator_proxy = models.ForeignKey(
         Estimator, on_delete=models.CASCADE, null=False, blank=False)
     _X_test_proxy = models.ForeignKey(

@@ -1,7 +1,6 @@
 import os
 import tempfile
 
-from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 
@@ -35,10 +34,12 @@ class EvaluationCase(TestCase):
             assert ev.estimator is rfc
             assert ev.y_predicted is None
 
-            assert os.path.exists(ev._estimator_proxy.object_file.path) is False
+            assert os.path.exists(
+                ev._estimator_proxy.object_file.path) is False
             assert os.path.exists(ev._X_test_proxy.object_file.path) is False
             assert os.path.exists(ev._y_test_proxy.object_file.path) is False
-            assert os.path.exists(ev._y_predicted_proxy.object_file.path) is False
+            assert os.path.exists(
+                ev._y_predicted_proxy.object_file.path) is False
 
             er = ev.evaluate()
 
@@ -51,7 +52,8 @@ class EvaluationCase(TestCase):
             assert os.path.exists(er._estimator_proxy.object_file.path) is True
             assert os.path.exists(er._X_test_proxy.object_file.path) is True
             assert os.path.exists(er._y_test_proxy.object_file.path) is True
-            assert os.path.exists(er._y_predicted_proxy.object_file.path) is True
+            assert os.path.exists(
+                er._y_predicted_proxy.object_file.path) is True
 
     def tearDown(self):
         self.tmp_dir.cleanup()
