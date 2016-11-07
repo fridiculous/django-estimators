@@ -1,9 +1,5 @@
-# using test version of settings.py
-# pytest_plugins = "estimators.tests.django",
-
 import django
 import os
-#from estimators.tests import settings as test_settings
 
 
 def pytest_report_header(config):
@@ -11,5 +7,6 @@ def pytest_report_header(config):
 
 
 def pytest_configure(config):
+    # using test version of settings.py
     os.environ['DJANGO_SETTINGS_MODULE'] = "estimators.tests.settings"
     django.setup()

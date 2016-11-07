@@ -3,5 +3,7 @@ language: python
 python:
   - "3.4"
   - "3.5"
-install: pip install tox-travis
-script: tox
+install: pip install tox-travis coveralls
+script: tox -e py351-django110
+after_success:
+  - coveralls

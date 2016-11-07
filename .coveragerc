@@ -4,7 +4,6 @@ source = estimators
 omit = estimators/tests/*
 
 [report]
-show_missing = True
 skip_covered = True
 omit = estimators/tests/*,estimators/hashing.py 
 
@@ -12,10 +11,12 @@ omit = estimators/tests/*,estimators/hashing.py
 directory = coverage_html
 
 [paths]
-django_19 =
-    .tox/py34-django-18/lib/python3.4
-    .tox/py35-django-18/lib/python3.5
+django18 =
+    .tox/py340-django18/lib/python3.4
+    .tox/py340-django18/lib/python3.4
+    .tox/py340-django110/lib/python3.4
 
-django_18 =
-    .tox/py34-django-19/lib/python3.4
-    .tox/py35-django-19/lib/python3.5
+django19 =
+    .tox/py351-django18/lib/python3.5
+    .tox/py351-django19/lib/python3.5
+    .tox/py351-django110/lib/python3.5
