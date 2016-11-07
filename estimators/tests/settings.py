@@ -1,4 +1,3 @@
-
 SECRET_KEY = 'testing settings file'
 
 INSTALLED_APPS = (
@@ -7,23 +6,18 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.admin',
     'estimators',
-    'django_nose',
 )
 
+DATABASE_ENGINE = 'sqlite3',
 DATABASES = {
     'default': {
+        'NAME': ':memory:',
         'ENGINE': 'django.db.backends.sqlite3',
-    }
+        'TEST_NAME': ':memory:',
+    },
 }
-
-# Use nose to run all tests
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-
-NOSE_ARGS = [
-    '--with-coverage',
-    '--cover-package=estimators',
-    '--cover-tests',
-]
+DATABASE_NAME = ':memory:'
+TEST_DATABASE_NAME = ':memory:'
 
 MIDDLEWARE_CLASSES = []
 
