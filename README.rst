@@ -51,7 +51,7 @@ Quick start
 
     # uses sklearn, but any object would work
     from sklearn.ensemble import RandomForestClassifier
-    est.estimator = RandomForestClassifer()
+    est.estimator = RandomForestClassifier()
     
     est.description = 'a simple stats model'
     est.save()
