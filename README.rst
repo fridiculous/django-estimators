@@ -6,13 +6,18 @@
    :target: https://landscape.io/github/fridiculous/django-estimators/master
    
 Django-Estimators
-=====
+==========
 
+Machine Learning Versioning made Simple
+
+
+Intro
+-----
 Django-Estimators helps persist and track machine learning models aka estimators.
 
 You can use this to version models, track and deploy models.  It's highly extensible and can be used with almost any python object (scikit-learn, numpy arrays, modules, methods).
 
------
+This repo utilizes django as an ORM.  If you'd like to work outside of django, try the sqlalchemy version `estimators <https://github.com/fridiculous/estimators.git>`_ instead.
 
 
 Installation
@@ -73,6 +78,8 @@ Now you can continue on as usual... ::
     from estimators.models import Estimator
 
 
+
+
 Use Cases
 ---------
 
@@ -89,6 +96,29 @@ If you aren't sure if it exists, the recommended method is to use the `get_or_cr
 
     est = Estimator.get_or_create(object)
 
+    from sklearn.datasets import load_digits
+    from sklearn.ensemble import RandomForestClassifier
+    
+    digits = load_digits() # 1797 by 64
+    X = digits.data
+    y = digits.target
+    
+    # simple splitting for validation testing
+    X_train, X_test = X[:1200], X[1200:]
+    y_train, y_test = y[:1200], y[1200:]
+    
+    rfc = RandomForestClassifier()
+    rfc.fit(X_train, y_train)
+    from estimator.models import Evaluator
+
+Now create your evaluation plan
+::
+
+    plan = Evaluator(X_test=X_test, y_test=y_test, estimator=rfc)
+
+    result = plan.evaluate()
+
+And you can view all the atributes on the plan
 
 Development Installation 
 ------------------------
