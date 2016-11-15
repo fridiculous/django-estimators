@@ -1,6 +1,7 @@
 
 
 from django.db import models
+
 from estimators.models.base import PrimaryMixin
 from estimators.models.datasets import DataSet
 from estimators.models.estimators import Estimator

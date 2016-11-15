@@ -1,4 +1,5 @@
 from django.db import models
+
 from estimators.models.base import HashableFileMixin
 
 

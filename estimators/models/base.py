@@ -1,8 +1,8 @@
 
 import dill
-
 from django.core.files.base import ContentFile
 from django.db import models
+
 from estimators import get_storage, get_upload_path, hashing
 
 
@@ -17,6 +17,8 @@ class PrimaryMixin(models.Model):
 
 class HashableFileMixin(models.Model):
 
+    create_date = models.DateTimeField(
+        auto_now_add=True, blank=False, null=False)
     object_hash = models.CharField(
         max_length=64, unique=True, default=None, null=False, editable=False)
     object_file = models.FileField(
