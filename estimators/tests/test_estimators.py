@@ -1,10 +1,9 @@
 import os
-import tempfile
-
-from estimators.models.estimators import Estimator
-from django.core.exceptions import ValidationError
 
 import pytest
+from django.core.exceptions import ValidationError
+
+from estimators.models.estimators import Estimator
 
 
 @pytest.mark.django_db
@@ -21,7 +20,8 @@ class TestEstimator():
         assert n.object_hash == 'd9c9f286391652b89978a6961b52b674'
         # assert loaded after calling n.estimator
         assert n.estimator == object
-        assert Estimator._compute_hash(object) == 'd9c9f286391652b89978a6961b52b674'
+        assert Estimator._compute_hash(
+            object) == 'd9c9f286391652b89978a6961b52b674'
 
     def test_estimator_persistance(self):
         m = Estimator(estimator=object, description='another object')
