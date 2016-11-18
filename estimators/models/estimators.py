@@ -1,11 +1,11 @@
 # original based on sci-kit hashing function
 from django.core.exceptions import ValidationError
 from django.db import models
-from estimators.managers import EstimatorManager
-from estimators.models.base import AbstractPersistObject
+
+from estimators.models.base import HashableFileMixin
 
 
-class Estimator(AbstractPersistObject):
+class Estimator(HashableFileMixin):
 
     """This class creates estimator objects that persists predictive models
 
@@ -32,8 +32,6 @@ class Estimator(AbstractPersistObject):
     _estimator = None
     # required by base class, to refer to the estimator property
     _object_property_name = '_estimator'
-
-    objects = EstimatorManager()
 
     class Meta:
         db_table = 'estimators'

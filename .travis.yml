@@ -3,5 +3,16 @@ language: python
 python:
   - "3.4"
   - "3.5"
-install: pip install tox-travis
-script: tox
+env:
+  - TOX_ENV=py340-django18
+  - TOX_ENV=py340-django19
+  - TOX_ENV=py340-django110
+  - TOX_ENV=py351-django18
+  - TOX_ENV=py351-django19
+  - TOX_ENV=py351-django110
+  - TOX_ENV=flake8
+  - TOX_ENV=isort
+install: pip install tox-travis coveralls
+script: tox -e $TOX_ENV
+after_success:
+  - if [[ "$TOX_ENV" == "py351-django110" ]]; then coveralls; fi

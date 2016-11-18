@@ -1,22 +1,29 @@
-import os
 
 import dill
-
-from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import models
-from estimators import get_upload_path, hashing
+
+from estimators import get_storage, get_upload_path, hashing
 
 
-class AbstractPersistObject(models.Model):
+class PrimaryMixin(models.Model):
 
-    create_date = models.DateTimeField(auto_now_add=True, blank=False, null=False)
+    create_date = models.DateTimeField(
+        auto_now_add=True, blank=False, null=False)
+
+    class Meta:
+        abstract = True
+
+
+class HashableFileMixin(models.Model):
+
+    create_date = models.DateTimeField(
+        auto_now_add=True, blank=False, null=False)
     object_hash = models.CharField(
         max_length=64, unique=True, default=None, null=False, editable=False)
     object_file = models.FileField(
-        upload_to=get_upload_path, default=None, null=False, blank=True, editable=False)
+        upload_to=get_upload_path, storage=get_storage(), default=None, null=False, blank=True, editable=False)
 
-    _object_arg_name = NotImplementedError()
     _object_property_name = NotImplementedError()
 
     class Meta:
@@ -24,7 +31,7 @@ class AbstractPersistObject(models.Model):
 
     @property
     def is_persisted(self):
-        return self.object_file.name is not None and os.path.isfile(
+        return self.object_file.name is not None and self.object_file.storage.exists(
             self.object_file.path)
 
     @classmethod
@@ -101,31 +108,3 @@ class AbstractPersistObject(models.Model):
         obj.object_file = filename
         obj.load()
         return obj
-
-    @classmethod
-    def delete_empty_records(cls):
-        empty_records = cls.objects.empty_records()
-        return empty_records.delete()
-
-    @classmethod
-    def delete_unreferenced_files(cls):
-        unreferenced_files = cls.objects.unreferenced_files()
-        for unreferenced_path in unreferenced_files:
-            os.remove(os.path.join(settings.MEDIA_ROOT, unreferenced_path))
-        return len(unreferenced_files)
-
-    @classmethod
-    def delete_duplicated_files(cls):
-        duplicated_files = cls.objects.all_duplicated_files()
-        for duplicated_path in duplicated_files:
-            os.remove(os.path.join(settings.MEDIA_ROOT, duplicated_path))
-        return len(duplicated_files)
-
-    @classmethod
-    def load_unreferenced_files(cls, directory=None):
-        unreferenced_files = cls.objects.unreferenced_files(
-            directory=directory)
-        for filename in unreferenced_files:
-            obj = cls.create_from_file(filename)
-            obj.save()
-        return len(unreferenced_files)
