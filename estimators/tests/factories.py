@@ -23,10 +23,8 @@ class EstimatorFactory(DjangoModelFactory):
 
     class Meta:
         model = Estimator
-        strategy = 'build'
 
     estimator = factory.Iterator([
-        RandomForestRegressor(),
         RandomForestClassifier(),
     ])
 
@@ -34,12 +32,17 @@ class EstimatorFactory(DjangoModelFactory):
     object_file = DjangoFileField(
         filename=lambda o: 'files/estimators/%s' % o.object_hash)
 
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        obj = model_class(*args, **kwargs)
+        obj.save()
+        return obj
+
 
 class DataSetFactory(DjangoModelFactory):
 
     class Meta:
         model = DataSet
-        strategy = 'build'
 
     class Params:
         min_random_value = 0
@@ -56,12 +59,17 @@ class DataSetFactory(DjangoModelFactory):
     object_hash = factory.LazyAttribute(lambda o: compute_hash(o.data))
     object_file = DjangoFileField(filename='the_file.dat')
 
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        obj = model_class(*args, **kwargs)
+        obj.save()
+        return obj
+
 
 class EvaluationResultFactory(DjangoModelFactory):
 
     class Meta:
         model = EvaluationResult
-        strategy = 'build'
 
     create_date = factory.LazyFunction(datetime.now)
     _estimator_proxy = factory.SubFactory(EstimatorFactory)
