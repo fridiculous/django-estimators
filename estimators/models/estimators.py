@@ -2,7 +2,12 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from estimators.models.base import HashableFileMixin
+from estimators.models.base import HashableFileMixin, HashableFileQuerySet
+
+
+class EstimatorQuerySet(HashableFileQuerySet):
+
+    object_property_name = 'estimator'
 
 
 class Estimator(HashableFileMixin):
@@ -32,6 +37,8 @@ class Estimator(HashableFileMixin):
     _estimator = None
     # required by base class, to refer to the estimator property
     _object_property_name = '_estimator'
+
+    objects = EstimatorQuerySet.as_manager()
 
     class Meta:
         db_table = 'estimators'

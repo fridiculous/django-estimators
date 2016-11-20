@@ -15,6 +15,32 @@ class PrimaryMixin(models.Model):
         abstract = True
 
 
+class HashableFileQuerySet(models.QuerySet):
+
+    object_property_name = NotImplementedError()
+
+    def get_or_create(self, defaults=None, **kwargs):
+        """
+        Looks up an object with the given kwargs, creating one if necessary.
+        Returns a tuple of (object, created), where created is a boolean
+        specifying whether an object was created.
+        """
+        obj = kwargs.pop(self.object_property_name, None)
+        if obj:
+            kwargs['object_hash'] = self.model._compute_hash(obj)
+        lookup, params = self._extract_model_params(defaults, **kwargs)
+        if obj:
+            params[self.object_property_name] = obj
+            del lookup['object_hash']
+        # The get() needs to be targeted at the write database in order
+        # to avoid potential transaction consistency problems.
+        self._for_write = True
+        try:
+            return self.get(**lookup), False
+        except self.model.DoesNotExist:
+            return self._create_object_from_params(lookup, params)
+
+
 class HashableFileMixin(models.Model):
 
     create_date = models.DateTimeField(
@@ -25,6 +51,8 @@ class HashableFileMixin(models.Model):
         upload_to=get_upload_path, storage=get_storage(), default=None, null=False, blank=True, editable=False)
 
     _object_property_name = NotImplementedError()
+
+    objects = HashableFileQuerySet.as_manager()
 
     class Meta:
         abstract = True
