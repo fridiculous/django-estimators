@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import numpy as np
-from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.ensemble import RandomForestClassifier
 
 import factory
 import factory.fuzzy
@@ -28,6 +28,7 @@ class EstimatorFactory(DjangoModelFactory):
         RandomForestClassifier(),
     ])
 
+    create_date = factory.LazyFunction(datetime.now)
     object_hash = factory.LazyAttribute(lambda o: compute_hash(o.estimator))
     object_file = DjangoFileField(
         filename=lambda o: 'files/estimators/%s' % o.object_hash)
@@ -57,7 +58,8 @@ class DataSetFactory(DjangoModelFactory):
 
     create_date = factory.LazyFunction(datetime.now)
     object_hash = factory.LazyAttribute(lambda o: compute_hash(o.data))
-    object_file = DjangoFileField(filename='the_file.dat')
+    object_file = DjangoFileField(
+        filename=lambda o: 'files/datasets/%s' % o.object_hash)
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
