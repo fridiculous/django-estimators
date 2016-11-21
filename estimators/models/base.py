@@ -18,26 +18,15 @@ class HashableFileQuerySet(models.QuerySet):
 
     object_property_name = NotImplementedError()
 
-    def get_or_create(self, defaults=None, **kwargs):
-        """
-        like `get_or_create` but also supports an object_propery_name.
-
-        Re-written `models.QuerySet.get_or_create`
-        """
+    def _extract_model_params(self, defaults, **kwargs):
         obj = kwargs.pop(self.object_property_name, None)
         if obj is not None:
             kwargs['object_hash'] = self.model._compute_hash(obj)
-        lookup, params = self._extract_model_params(defaults, **kwargs)
+        lookup, params = super()._extract_model_params(defaults, **kwargs)
         if obj is not None:
             params[self.object_property_name] = obj
             del params['object_hash']
-        # The get() needs to be targeted at the write database in order
-        # to avoid potential transaction consistency problems.
-        self._for_write = True
-        try:
-            return self.get(**lookup), False
-        except self.model.DoesNotExist:
-            return self._create_object_from_params(lookup, params)
+        return lookup, params
 
 
 class HashableFileMixin(models.Model):
