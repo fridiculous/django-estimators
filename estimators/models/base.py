@@ -1,4 +1,3 @@
-
 import dill
 from django.core.files.base import ContentFile
 from django.db import models
@@ -21,17 +20,17 @@ class HashableFileQuerySet(models.QuerySet):
 
     def get_or_create(self, defaults=None, **kwargs):
         """
-        Looks up an object with the given kwargs, creating one if necessary.
-        Returns a tuple of (object, created), where created is a boolean
-        specifying whether an object was created.
+        like `get_or_create` but also supports an object_propery_name.
+
+        Re-written `models.QuerySet.get_or_create`
         """
         obj = kwargs.pop(self.object_property_name, None)
-        if obj:
+        if obj is not None:
             kwargs['object_hash'] = self.model._compute_hash(obj)
         lookup, params = self._extract_model_params(defaults, **kwargs)
-        if obj:
+        if obj is not None:
             params[self.object_property_name] = obj
-            del lookup['object_hash']
+            del params['object_hash']
         # The get() needs to be targeted at the write database in order
         # to avoid potential transaction consistency problems.
         self._for_write = True
@@ -65,11 +64,6 @@ class HashableFileMixin(models.Model):
     @classmethod
     def _compute_hash(cls, obj):
         return hashing.hash(obj)
-
-    @classmethod
-    def get_by_hash(cls, object_hash):
-        query_set = cls.objects.filter(object_hash=object_hash)
-        return query_set.first()
 
     @property
     def object_property(self):
@@ -115,19 +109,7 @@ class HashableFileMixin(models.Model):
 
     @classmethod
     def get_or_create(cls, obj):
-        """Returns an existing Estimator instance if found, otherwise creates a new Estimator.
-
-        The recommended constructor for Estimators."""
-        object_hash = cls._compute_hash(obj)
-        # instance = cls.get_by_hash(object_hash)
-        try:
-            instance = cls.objects.get(object_hash=object_hash)
-        except getattr(cls, "DoesNotExist"):
-            # create object
-            instance = cls()
-            instance.set_object(obj)
-            instance.save()
-        return instance
+        raise DeprecationWarning('Please use `%s.objects.get_or_create()` instead' % cls)
 
     @classmethod
     def create_from_file(cls, filename):

@@ -33,11 +33,11 @@ class TestEstimator():
         assert m.is_persisted == True
 
     def test_get_or_create(self):
-        m = Estimator.get_or_create('new_original_object')
+        m, created = Estimator.objects.get_or_create(estimator='new_original_object')
         m.save()
         assert m.estimator == 'new_original_object'
 
-        n = Estimator.get_or_create('new_original_object')
+        n, created = Estimator.objects.get_or_create(estimator='new_original_object')
         assert m == n
 
     def test_create_from_file(self):
