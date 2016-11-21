@@ -18,6 +18,12 @@ class HashableFileQuerySet(models.QuerySet):
 
     object_property_name = NotImplementedError()
 
+    def filter(self, *args, **kwargs):
+        obj = kwargs.pop(self.object_property_name, None)
+        if obj is not None:
+            kwargs['object_hash'] = self.model._compute_hash(obj)
+        return super().filter(*args, **kwargs)
+
     def _extract_model_params(self, defaults, **kwargs):
         obj = kwargs.pop(self.object_property_name, None)
         if obj is not None:
