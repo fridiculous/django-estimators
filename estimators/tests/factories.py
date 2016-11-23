@@ -11,6 +11,9 @@ from factory.django import FileField as DjangoFileField
 from factory.django import DjangoModelFactory
 
 
+__all__ = ['EstimatorFactory', 'DataSetFactory', 'EvaluationResultFactory']
+
+
 def compute_hash(obj):
     return hashing.hash(obj)
 
@@ -23,6 +26,7 @@ class EstimatorFactory(DjangoModelFactory):
 
     class Meta:
         model = Estimator
+        django_get_or_create = ('object_hash',)
 
     estimator = factory.Iterator([
         RandomForestClassifier(),
@@ -33,17 +37,12 @@ class EstimatorFactory(DjangoModelFactory):
     object_file = DjangoFileField(
         filename=lambda o: 'files/estimators/%s' % o.object_hash)
 
-    @classmethod
-    def _create(cls, model_class, *args, **kwargs):
-        obj = model_class(*args, **kwargs)
-        obj.save()
-        return obj
-
 
 class DataSetFactory(DjangoModelFactory):
 
     class Meta:
         model = DataSet
+        django_get_or_create = ('object_hash',)
 
     class Params:
         min_random_value = 0
@@ -60,12 +59,6 @@ class DataSetFactory(DjangoModelFactory):
     object_hash = factory.LazyAttribute(lambda o: compute_hash(o.data))
     object_file = DjangoFileField(
         filename=lambda o: 'files/datasets/%s' % o.object_hash)
-
-    @classmethod
-    def _create(cls, model_class, *args, **kwargs):
-        obj = model_class(*args, **kwargs)
-        obj.save()
-        return obj
 
 
 class EvaluationResultFactory(DjangoModelFactory):
