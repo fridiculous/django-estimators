@@ -21,4 +21,7 @@ TEST_DATABASE_NAME = ':memory:'
 
 MIDDLEWARE_CLASSES = []
 
-MEDIA_ROOT = 'tmp/'
+import tempfile
+MEDIA_ROOT = tempfile.gettempdir()
+
+DEBUG = True
