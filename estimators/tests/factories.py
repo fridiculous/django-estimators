@@ -1,15 +1,14 @@
 from datetime import datetime
 
-import numpy as np
-from sklearn.ensemble import RandomForestClassifier
-
 import factory
 import factory.fuzzy
-from estimators import hashing
-from estimators.models import DataSet, Estimator, EvaluationResult
+import numpy as np
 from factory.django import FileField as DjangoFileField
 from factory.django import DjangoModelFactory
+from sklearn.ensemble import RandomForestClassifier
 
+from estimators import hashing
+from estimators.models import DataSet, Estimator, EvaluationResult
 
 __all__ = ['EstimatorFactory', 'DataSetFactory', 'EvaluationResultFactory']
 
