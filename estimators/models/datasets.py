@@ -1,6 +1,11 @@
 from django.db import models
 
-from estimators.models.base import HashableFileMixin
+from estimators.models.base import HashableFileMixin, HashableFileQuerySet
+
+
+class DataSetQuerySet(HashableFileQuerySet):
+
+    object_property_name = 'data'
 
 
 class DataSet(HashableFileMixin):
@@ -8,6 +13,8 @@ class DataSet(HashableFileMixin):
     description = models.CharField(max_length=256)
     _data = None
     _object_property_name = '_data'
+
+    objects = DataSetQuerySet.as_manager()
 
     class Meta:
         db_table = 'data_sets'

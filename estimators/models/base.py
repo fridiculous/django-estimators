@@ -1,4 +1,3 @@
-
 import dill
 from django.core.files.base import ContentFile
 from django.db import models
@@ -15,6 +14,31 @@ class PrimaryMixin(models.Model):
         abstract = True
 
 
+class HashableFileQuerySet(models.QuerySet):
+
+    object_property_name = NotImplementedError()
+
+    def filter(self, *args, **kwargs):
+        """filter lets django managers use `objects.filter` on a hashable object."""
+        obj = kwargs.pop(self.object_property_name, None)
+        if obj is not None:
+            kwargs['object_hash'] = self.model._compute_hash(obj)
+        return super().filter(*args, **kwargs)
+
+    def _extract_model_params(self, defaults, **kwargs):
+        """this method allows django managers use `objects.get_or_create` and
+        `objects.update_or_create` on a hashable object.
+        """
+        obj = kwargs.pop(self.object_property_name, None)
+        if obj is not None:
+            kwargs['object_hash'] = self.model._compute_hash(obj)
+        lookup, params = super()._extract_model_params(defaults, **kwargs)
+        if obj is not None:
+            params[self.object_property_name] = obj
+            del params['object_hash']
+        return lookup, params
+
+
 class HashableFileMixin(models.Model):
 
     create_date = models.DateTimeField(
@@ -25,6 +49,8 @@ class HashableFileMixin(models.Model):
         upload_to=get_upload_path, storage=get_storage(), default=None, null=False, blank=True, editable=False)
 
     _object_property_name = NotImplementedError()
+
+    objects = HashableFileQuerySet.as_manager()
 
     class Meta:
         abstract = True
@@ -37,11 +63,6 @@ class HashableFileMixin(models.Model):
     @classmethod
     def _compute_hash(cls, obj):
         return hashing.hash(obj)
-
-    @classmethod
-    def get_by_hash(cls, object_hash):
-        query_set = cls.objects.filter(object_hash=object_hash)
-        return query_set.first()
 
     @property
     def object_property(self):
@@ -67,7 +88,7 @@ class HashableFileMixin(models.Model):
         if self.object_hash:
             data = dill.dumps(self.object_property)
             f = ContentFile(data)
-            self.object_file.save(self.object_hash, f)
+            self.object_file.save(self.object_hash, f, save=False)
             f.close()
             return True
         return False
@@ -87,19 +108,8 @@ class HashableFileMixin(models.Model):
 
     @classmethod
     def get_or_create(cls, obj):
-        """Returns an existing Estimator instance if found, otherwise creates a new Estimator.
-
-        The recommended constructor for Estimators."""
-        object_hash = cls._compute_hash(obj)
-        # instance = cls.get_by_hash(object_hash)
-        try:
-            instance = cls.objects.get(object_hash=object_hash)
-        except getattr(cls, "DoesNotExist"):
-            # create object
-            instance = cls()
-            instance.set_object(obj)
-            instance.save()
-        return instance
+        """Deprecated in favor for the canonical `objects.get_or_create` method"""
+        raise DeprecationWarning('Please use `%s.objects.get_or_create()` instead' % cls)
 
     @classmethod
     def create_from_file(cls, filename):

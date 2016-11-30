@@ -87,12 +87,14 @@ class Evaluator(EvaluationMixin):
         return er
 
     def persist_results(self, er):
-        er._estimator_proxy = Estimator.get_or_create(
-            er._estimator_proxy.estimator)
-        er._X_test_proxy = DataSet.get_or_create(er._X_test_proxy.data)
-        er._y_test_proxy = DataSet.get_or_create(er._y_test_proxy.data)
-        er._y_predicted_proxy = DataSet.get_or_create(
-            er._y_predicted_proxy.data)
+        er._estimator_proxy, _ = Estimator.objects.get_or_create(
+            estimator=er._estimator_proxy.estimator)
+        er._X_test_proxy, _ = DataSet.objects.get_or_create(
+            data=er._X_test_proxy.data)
+        er._y_test_proxy, _ = DataSet.objects.get_or_create(
+            data=er._y_test_proxy.data)
+        er._y_predicted_proxy, _ = DataSet.objects.get_or_create(
+            data=er._y_predicted_proxy.data)
         er.save()
 
     def __repr__(self):
