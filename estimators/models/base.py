@@ -19,12 +19,16 @@ class HashableFileQuerySet(models.QuerySet):
     object_property_name = NotImplementedError()
 
     def filter(self, *args, **kwargs):
+        """filter lets django managers use `objects.filter` on a hashable object."""
         obj = kwargs.pop(self.object_property_name, None)
         if obj is not None:
             kwargs['object_hash'] = self.model._compute_hash(obj)
         return super().filter(*args, **kwargs)
 
     def _extract_model_params(self, defaults, **kwargs):
+        """this method allows django managers use `objects.get_or_create` and
+        `objects.update_or_create` on a hashable object.
+        """
         obj = kwargs.pop(self.object_property_name, None)
         if obj is not None:
             kwargs['object_hash'] = self.model._compute_hash(obj)
@@ -104,6 +108,7 @@ class HashableFileMixin(models.Model):
 
     @classmethod
     def get_or_create(cls, obj):
+        """Deprecated in favor for the canonical `objects.get_or_create` method"""
         raise DeprecationWarning('Please use `%s.objects.get_or_create()` instead' % cls)
 
     @classmethod
