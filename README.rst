@@ -12,7 +12,7 @@
 Django-Estimators
 =================
 
-Tidy Persistance and Retrieval for Machine Learning
+Tidy Persistence and Retrieval for Machine Learning
 
 
 Intro
