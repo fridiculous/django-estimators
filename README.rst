@@ -161,19 +161,30 @@ And you can view all the atributes on the evaluation result
     result.y_predicted
 
 
-Using with Notebook (or without django shell)
+Using with Jupyter Notebook (or without a django app)
 ---------------------------------------------
 
-In order to have access to the django db, you'll need to set up the environment variable to load up your django project.  In ipython, you can set the environment variable ``DJANGO_SETTINGS_MODULE`` to ``your_project_name.settings`` like so::
+Django-Estimators can run as a standalone django app.In order to have access to the django db, you'll need to set up the environment variable to load up your django project.  In ipython, by default you can set the environment variable ``DJANGO_SETTINGS_MODULE`` to ``estimators.template_settings`` like so
+::
 
     import os
     import django
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "your_project_name.settings")
+    os.environ['DJANGO_SETTINGS_MODULE'] = "estimators.template_settings"
     django.setup()
 
-Now you can continue on as usual... ::
+If you're creating a new database (by default it's ``db.sqlite3``), in python, you'll need to run
+::
+
+    from django.core.management import call_command
+    call_command('migrate')
+
+
+Now you can continue you as usual... ::
 
     from estimators.models import Estimator
+
+
+To use your own custom settings, make a copy of the ``estimators.template_settings`` and edit the fields.  Like above, run ``os.environ['DJANGO_SETTINGS_MODULE'] = "custom_settings_file"`` before running ``django.setup()``.
 
 
 Development Installation 

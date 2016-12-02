@@ -1,4 +1,4 @@
-SECRET_KEY = 'testing settings file'
+SECRET_KEY = 'template settings file'
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -11,18 +11,16 @@ INSTALLED_APPS = (
 DATABASE_ENGINE = 'sqlite3',
 DATABASES = {
     'default': {
-        'NAME': ':memory:',
+        'NAME': 'db.sqlite3',
         'ENGINE': 'django.db.backends.sqlite3',
-        'TEST_NAME': ':memory:',
     },
 }
-DATABASE_NAME = ':memory:'
-TEST_DATABASE_NAME = ':memory:'
 
 MIDDLEWARE_CLASSES = []
 
-import tempfile
+MEDIA_ROOT = 'files'
 
-MEDIA_ROOT = tempfile.gettempdir()
+ESTIMATOR_DIR = 'estimators/'
+DATASET_DIR = 'datasets/'
 
 DEBUG = True

@@ -34,7 +34,7 @@ class EstimatorFactory(DjangoModelFactory):
     create_date = factory.LazyFunction(datetime.now)
     object_hash = factory.LazyAttribute(lambda o: compute_hash(o.estimator))
     object_file = DjangoFileField(
-        filename=lambda o: 'files/estimators/%s' % o.object_hash)
+        filename=lambda o: '%s/%s' % (Estimator.DIRECTORY, o.object_hash))
 
 
 class DataSetFactory(DjangoModelFactory):
@@ -57,7 +57,7 @@ class DataSetFactory(DjangoModelFactory):
     create_date = factory.LazyFunction(datetime.now)
     object_hash = factory.LazyAttribute(lambda o: compute_hash(o.data))
     object_file = DjangoFileField(
-        filename=lambda o: 'files/datasets/%s' % o.object_hash)
+        filename=lambda o: '%s/%s' % (DataSet.DIRECTORY, o.object_hash))
 
 
 class EvaluationResultFactory(DjangoModelFactory):

@@ -1,5 +1,6 @@
 from django.db import models
 
+from estimators import DATASET_DIR
 from estimators.models.base import HashableFileMixin, HashableFileQuerySet
 
 
@@ -15,6 +16,8 @@ class DataSet(HashableFileMixin):
     _object_property_name = '_data'
 
     objects = DataSetQuerySet.as_manager()
+
+    DIRECTORY = DATASET_DIR
 
     class Meta:
         db_table = 'data_sets'
