@@ -47,10 +47,12 @@ Quick start
   
 2. To create the estimators table, run
 ::
+
     python manage.py migrate
 
 3. Run ``python manage.py shell`` and get create new models like so
 ::
+
     from sklearn.ensemble import RandomForestClassifier
     rfc = RandomForestClassifier()
     
@@ -162,7 +164,7 @@ And you can view all the atributes on the evaluation result
 
 
 Using with Jupyter Notebook (or without a django app)
----------------------------------------------
+-----------------------------------------------------
 
 Django-Estimators can run as a standalone django app.In order to have access to the django db, you'll need to set up the environment variable to load up your django project.  In ipython, by default you can set the environment variable ``DJANGO_SETTINGS_MODULE`` to ``estimators.template_settings`` like so
 ::
@@ -172,7 +174,7 @@ Django-Estimators can run as a standalone django app.In order to have access to 
     os.environ['DJANGO_SETTINGS_MODULE'] = "estimators.template_settings"
     django.setup()
 
-If you're creating a new database (by default it's ``db.sqlite3``), in python, you'll need to run
+If you're creating a new database (by default it's ``db.sqlite3``).  Therefore we need to run migrations, so in python
 ::
 
     from django.core.management import call_command

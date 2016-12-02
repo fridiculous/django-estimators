@@ -16,7 +16,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-estimators',
-    version='0.1.0.dev',
+    version='0.2.0',
     packages=find_packages(),
     include_package_data=True,
     install_requires=reqs,
@@ -46,5 +46,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Software Development :: Version Control',
     ],
-    keywords='scikit-learn, machine learning, ml, estimators, version control'
+    keywords='''scikit-learn, sklearn, machine learning, artificial intelligence, ml,
+        ai, estimators, version, versioning, benchmark, persist, storage, track, models,
+        repository, evaluation, workflow'''
 )
