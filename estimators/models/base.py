@@ -56,6 +56,10 @@ class HashableFileMixin(models.Model):
         abstract = True
 
     @property
+    def relative_path(self):
+        return get_upload_path(self, self.object_file.name)
+
+    @property
     def is_persisted(self):
         return self.object_file.name is not None and self.object_file.storage.exists(
             self.object_file.path)
