@@ -59,17 +59,19 @@ class HashableFileMixin(models.Model):
         abstract = True
 
     @property
-    def relative_path(self):
+    def upload_path(self):
         if self.object_file.name is not None:
             dir_name, file_name = os.path.split(self.object_file.name)
             return get_upload_path(self, file_name)
 
     @property
+    def file_path(self):
+        if self.object_file.name is not None:
+            return os.path.join(self.object_file.storage.location, self.upload_path)
+
+    @property
     def is_file_persisted(self):
-        try:
-            return self.object_file.name is not None and self.object_file.storage.exists(self.object_file.path)
-        except NotImplementedError:
-            return self.object_file.name is not None and self.object_file.storage.exists(self.relative_path)
+        return self.object_file.name is not None and self.object_file.storage.exists(self.file_path)
 
     @classmethod
     def _compute_hash(cls, obj):

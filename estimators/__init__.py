@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.core.files.storage import FileSystemStorage
+from django.core.files.storage import default_storage
 import os
 
 ESTIMATOR_DIR = getattr(settings, "ESTIMATOR_DIR", 'estimators/')
@@ -13,10 +13,10 @@ files_map = {
 
 def get_upload_path(instance, filename):
     directory = files_map[instance._object_property_name]
-    full_path = os.path.join(directory, filename)
-    return full_path
+    relative_path = os.path.join(directory, filename)
+    return relative_path
 
 
 def get_storage():
     ''' return configured Storage '''
-    return FileSystemStorage(location=settings.MEDIA_ROOT)
+    return default_storage  # for default filesystem, (location=settings.MEDIA_ROOT)
