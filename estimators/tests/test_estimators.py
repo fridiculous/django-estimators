@@ -88,7 +88,7 @@ class TestEstimator():
         with pytest.raises(ValidationError):
             m.save()
 
-    def test_prevent_double_(self):
+    def test_prevent_double_file_save(self):
         EstimatorFactory(estimator='yes')
 
         hash_of_yes = 'b635788f4b614e8469b470b8e9f68174'
