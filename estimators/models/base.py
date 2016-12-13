@@ -1,3 +1,5 @@
+import os
+
 import dill
 from django.core.files.base import ContentFile
 from django.db import models
@@ -49,6 +51,7 @@ class HashableFileMixin(models.Model):
         upload_to=get_upload_path, storage=get_storage(), default=None, null=False, blank=True, editable=False)
 
     _object_property_name = NotImplementedError()
+    _persisted = False
 
     objects = HashableFileQuerySet.as_manager()
 
@@ -56,9 +59,19 @@ class HashableFileMixin(models.Model):
         abstract = True
 
     @property
-    def is_persisted(self):
-        return self.object_file.name is not None and self.object_file.storage.exists(
-            self.object_file.path)
+    def upload_path(self):
+        if self.object_file.name is not None:
+            dir_name, file_name = os.path.split(self.object_file.name)
+            return get_upload_path(self, file_name)
+
+    @property
+    def file_path(self):
+        if self.object_file.name is not None:
+            return os.path.join(self.object_file.storage.location, self.upload_path)
+
+    @property
+    def is_file_persisted(self):
+        return self.object_file.name is not None and self.object_file.storage.exists(self.file_path)
 
     @classmethod
     def _compute_hash(cls, obj):
@@ -90,19 +103,19 @@ class HashableFileMixin(models.Model):
             f = ContentFile(data)
             self.object_file.save(self.object_hash, f, save=False)
             f.close()
-            return True
-        return False
+            self._persisted = True
+        return self._persisted
 
     def load(self):
         """a private method that loads an estimator object from the filesystem"""
-        if self.is_persisted:
+        if self.is_file_persisted:
             self.object_file.open()
             temp = dill.loads(self.object_file.read())
             self.set_object(temp)
             self.object_file.close()
 
     def save(self, *args, **kwargs):
-        if not self.is_persisted:
+        if not self.is_file_persisted:
             self.persist()
         super().save(*args, **kwargs)
 

@@ -12,11 +12,11 @@ class TestEstimator():
     def test_estimator_persistance_without_factory(self):
         m = Estimator(estimator='new string', description='another object')
         assert m.object_file.storage.exists(m.object_file.path) == False
-        assert m.is_persisted == False
+        assert m.is_file_persisted == False
 
         m.save()
         assert m.object_file.storage.exists(m.object_file.path) == True
-        assert m.is_persisted == True
+        assert m.is_file_persisted == True
 
     def test_object_hash_with_factory(self):
         m = EstimatorFactory(estimator=object)
@@ -62,7 +62,7 @@ class TestEstimator():
         m = Estimator.create_from_file(file_path)
         assert m.estimator == obj
         assert m.object_hash == object_hash
-        assert m.is_persisted == False
+        assert m.is_file_persisted == True
 
     def test_update_estimator_fail(self):
         m = Estimator(estimator='uneditable_object')
@@ -87,3 +87,12 @@ class TestEstimator():
         m.object_hash = 'randomly set hash'
         with pytest.raises(ValidationError):
             m.save()
+
+    def test_prevent_double_file_save(self):
+        EstimatorFactory(estimator='yes')
+
+        hash_of_yes = 'b635788f4b614e8469b470b8e9f68174'
+        e = Estimator.objects.get(object_hash=hash_of_yes)
+        assert e.is_file_persisted == True
+        e.save()
+        assert e.object_file.name.endswith(hash_of_yes)
