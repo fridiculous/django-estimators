@@ -20,7 +20,7 @@ Intro
 Django-Estimators helps persist and track machine learning models (aka estimators) and datasets.
 
 
-This library provides a series of proxy objects that wrap common python machine learning objects and dataset objects.  As a result, this library can be used to version, track progress and deploy models.  It's highly extensible and can be used with almost any python object (scikit-learn, numpy arrays, modules, methods).
+This library provides a series of proxy objects that wrap common python machine learning objects and dataset objects.  This library versions, track progress and deploy models.  It's highly extensible and can be used with most any python object (scikit-learn, numpy arrays, modules, methods).
 
 This repo utilizes django as an ORM.  If you'd like to work outside of django, try the sqlalchemy-based `estimators <https://github.com/fridiculous/estimators.git>`_ library instead.
 
@@ -29,7 +29,8 @@ Installation
 ------------
 
 
-Django-estimators is on PyPI, so just run: ::
+Run: 
+::
 
     pip install django-estimators
 
@@ -37,7 +38,7 @@ Django-estimators is on PyPI, so just run: ::
 Quick start
 -----------
 
-1. Add "estimators" to your INSTALLED_APPS django setting like this
+1. Add ``estimators`` to your INSTALLED_APPS.
 ::
 
     INSTALLED_APPS = [
@@ -45,12 +46,12 @@ Quick start
         'estimators',
     ]
   
-2. To create the estimators table, run
+2. Create the estimators table.
 ::
 
     python manage.py migrate
 
-3. Run ``python manage.py shell`` and get create new models like so
+3. Create a new model. Run ``python manage.py shell``
 ::
 
     from sklearn.ensemble import RandomForestClassifier
@@ -61,41 +62,39 @@ Quick start
     est.description = 'a simple forest'
     est.save()
 
-4.  Retrieve your model, using the classic django orm, we can pull the last Estimator 
-::
+4.  Retrieve your model using the django orm.
 
     est = Estimator.objects.last()
     # now use your estimator
     est.estimator.predict(X)
 
 
-Use Case: Retrieving Models/Estimators
---------------------------------------
+Retrieving Models/Estimators
+----------------------------
 
-If you aren't sure if it exists, the recommended method is to use the `get_or_create` method
+Use ``get_or_create`` to retrieve your model safely:
 ::
 
     est = Estimator.objects.get_or_create(estimator=object)
     # or potentially update it with update_or_create
     est = Estimator.objects.update_or_create(estimator=object)
 
-If you already have the model, in this case of type object
-::
+If you have the model:
 
     est = Estimator.objects.filter(estimator=object).first()
 
-If you know the unique hash of the model
+Retrieve by unique hash:
 ::
 
     est = Estimator.objects.filter(object_hash='d9c9f286391652b89978a6961b52b674').first()
 
 
 
-Use Case: Persisting and Retrieving DataSets
---------------------------------------------
+Persisting and Retrieving DataSets
+----------------------------------
 
 The `DataSet` class functions just like the `Estimator` class.  If you have
-a numpy matrix or a pandas dataframe, you can wrap it with a DataSet object
+a numpy matrix or a pandas dataframe, wrap it with a DataSet object:
 ::
 
     import numpy as np
@@ -108,28 +107,27 @@ a numpy matrix or a pandas dataframe, you can wrap it with a DataSet object
     ds = DataSet(data=df)
     ds.save()
 
-You can pull that same DataSet object later with
+Pull that same DataSet object with:
 ::
 
     ds = DataSet.objects.latest('create_date')
 
-And if you already have the dataset
+If you already have the dataset:
 ::
 
     ds = DataSet.objects.filter(data=df).first()
 
 
-Use Case: Persisting Predictions and Results 
---------------------------------------------
+Persisting Predictions and Results 
+----------------------------------
 
-Sometimes the most valuable part of a machine learning is the whole process.
-Using an ``Evaluator`` object, we can define the relationships between X_test, y_test and
+The most valuable part of a machine learning is the whole process.
+Using an ``Evaluator`` object, define the relationships between X_test, y_test and
 y_predicted ahead of time.
 
-Then we can evaluate the evaluation plan, which in turn calls the ``predict`` method on the estimator
+Then evaluate the evaluation plan, which in turn calls the ``predict`` method on the estimator
 and then presists all the wrapped objects.
 
-Here's a demo of using an Evaluator.
 ::
 
     from sklearn.datasets import load_digits
@@ -146,7 +144,7 @@ Here's a demo of using an Evaluator.
     rfc = RandomForestClassifier()
     rfc.fit(X_train, y_train)
 
-Now create your evaluation plan
+Create the evaluation plan:
 ::
 
     from estimators.models import Evaluator
@@ -154,7 +152,7 @@ Now create your evaluation plan
 
     result = plan.evaluate() # executes `predict` method on X_test
 
-And you can view all the atributes on the evaluation result
+View all the atributes on the evaluation result:
 ::
 
     result.estimator
@@ -166,7 +164,7 @@ And you can view all the atributes on the evaluation result
 Using with Jupyter Notebook (or without a django app)
 -----------------------------------------------------
 
-Django-Estimators can run as a standalone django app.In order to have access to the django db, you'll need to set up the environment variable to load up your django project.  In ipython, by default you can set the environment variable ``DJANGO_SETTINGS_MODULE`` to ``estimators.template_settings`` like so
+Django-Estimators can run as a standalone django app. In order to have access to the django db, set up the environment variable to load up your django project.  In ipython, set the environment variable ``DJANGO_SETTINGS_MODULE`` to ``estimators.template_settings``:
 ::
 
     import os
@@ -174,27 +172,28 @@ Django-Estimators can run as a standalone django app.In order to have access to 
     os.environ['DJANGO_SETTINGS_MODULE'] = "estimators.template_settings"
     django.setup()
 
-If you're creating a new database (by default it's ``db.sqlite3``).  Therefore we need to run migrations, so in python
+When creating a new database (by default ``db.sqlite3``). Run this migration:
 ::
 
     from django.core.management import call_command
     call_command('migrate')
 
 
-Now you can continue you as usual... ::
+Continue as usual...
+::
 
     from estimators.models import Estimator
 
 
-To use your own custom settings, make a copy of the ``estimators.template_settings`` and edit the fields.  Like above, run ``os.environ['DJANGO_SETTINGS_MODULE'] = "custom_settings_file"`` before running ``django.setup()``.
+To use custom settings, copy ``estimators.template_settings`` and edit the fields.  Like above, run ``os.environ['DJANGO_SETTINGS_MODULE'] = "custom_settings_file"`` before running ``django.setup()``.
 
 
 Development Installation 
 ------------------------
 
-To install the latest version of django-estimators, clone the repo, change directory to the repo, and pip install it into your current virtual environment.::
+To install the latest version of django-estimators, clone the repo, cd into the repo, and pip install with the current virtual environment.::
 
     $ git clone git@github.com:fridiculous/django-estimators.git
     $ cd django-estimators
     $ <activate your project’s virtual environment>
-    (virtualenv) $ pip install -e .  # the dot specifies for this current repo
+    (virtualenv) $ pip install -e .
