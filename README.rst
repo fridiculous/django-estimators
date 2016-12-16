@@ -1,4 +1,3 @@
-
 .. image:: https://travis-ci.org/fridiculous/django-estimators.svg?branch=master
     :target: https://travis-ci.org/fridiculous/django-estimators
 
@@ -8,21 +7,37 @@
 .. image:: https://landscape.io/github/fridiculous/django-estimators/master/landscape.svg?style=flat
    :target: https://landscape.io/github/fridiculous/django-estimators/master
 
-
 Django-Estimators
 =================
 
-Tidy Persistence and Retrieval for Machine Learning
+Machine Learning Models with SQL 
 
 
-Intro
------
-Django-Estimators helps persist and track machine learning models (aka estimators) and datasets.
+Django-Estimators helps organize and track machine learning models and datasets by persisting modeling metadata to a relational database.  In particular, Django-Estimators helps with: 
 
 
-This library provides a series of proxy objects that wrap common python machine learning objects and dataset objects.  This library versions, track progress and deploy models.  It's highly extensible and can be used with most any python object (scikit-learn, numpy arrays, modules, methods).
+  - (**Modeling Analytics**) Which models did I create in the last month? How many total?
 
-This repo utilizes django as an ORM.  If you'd like to work outside of django, try the sqlalchemy-based `estimators <https://github.com/fridiculous/estimators.git>`_ library instead.
+  - (**Benchmarking Models**) How does this model compare to my previous model? 
+
+  - (**Deploying to Web**) How can a production web app use my model?
+
+  - (**Large Quantity of Models**) Can I create 1000s of models, one for each of my users? 
+
+
+Django-Estimators provides a series of `proxy objects <https://en.wikipedia.org/wiki/Proxy_pattern>`_ that wrap common python machine learning objects and dataset objects.  These proxy objects help version and track models, for the purposes of productionizing, deploying, and benchmarking machine learning models.  These proxy objects are lightweight and can be used with most any python instances including `scikit-learn <https://github.com/scikit-learn/scikit-learn>`_ classes, numpy arrays, and pandas dataframes.
+
+This library uses `django <https://github.com/django/django>`_ as an ORM.  If you'd like to work outside of django, try the sqlalchemy-based `estimators <https://github.com/fridiculous/estimators.git>`_ library instead.
+
+------
+
+Common metadata that's querably in sql:
+
+ * the ``create_date`` of the model
+ * a unique ``hash`` of the model 
+ * the ``file location`` where the model is actually saved (e.g. s3)
+ * relationships between training sets, testing sets and models. 
+ * tags
 
 
 Installation
@@ -51,7 +66,7 @@ Quick start
 
     python manage.py migrate
 
-3. Create a new model. Run ``python manage.py shell``
+3. Create and save a new model. Open the python interpreter ``python manage.py shell`` and run
 ::
 
     from sklearn.ensemble import RandomForestClassifier
@@ -83,7 +98,7 @@ If you have the model:
 
     est = Estimator.objects.filter(estimator=object).first()
 
-Retrieve by unique hash:
+Retrieve by the unique hash:
 ::
 
     est = Estimator.objects.filter(object_hash='d9c9f286391652b89978a6961b52b674').first()
@@ -172,7 +187,7 @@ Django-Estimators can run as a standalone django app. In order to have access to
     os.environ['DJANGO_SETTINGS_MODULE'] = "estimators.template_settings"
     django.setup()
 
-When creating a new database (by default ``db.sqlite3``). Run this migration:
+After creating a new database (by default ``db.sqlite3``), run the django migrations:
 ::
 
     from django.core.management import call_command
