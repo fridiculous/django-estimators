@@ -14,7 +14,6 @@ def pytest_configure(config):
     from django.conf import settings
     settings.MEDIA_ROOT = temp_dir.name
 
-
 def pytest_report_header(config):
     print('MEDIA_ROOT temporary directory: %s' % temp_dir.name)
 
