@@ -63,6 +63,7 @@ Quick start
     est.save()
 
 4.  Retrieve your model using the django orm.
+::
 
     est = Estimator.objects.last()
     # now use your estimator
@@ -80,6 +81,7 @@ Use ``get_or_create`` to retrieve your model safely:
     est = Estimator.objects.update_or_create(estimator=object)
 
 If you have the model:
+::
 
     est = Estimator.objects.filter(estimator=object).first()
 
